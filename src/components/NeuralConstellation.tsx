@@ -65,6 +65,7 @@ export const NeuralConstellation: React.FC = () => {
   const [incomingStreams, setIncomingStreams] = useState<any[]>([]);
   const [hairStrands, setHairStrands] = useState<any[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [isExpanding, setIsExpanding] = useState(false);
   
   useEffect(() => {
     setIsMounted(true);
@@ -80,6 +81,19 @@ export const NeuralConstellation: React.FC = () => {
     });
     return () => clearTimeout(brainTimer);
   }, []);
+
+  const handleNodeClick = (node: NodeData) => {
+    if (node.id === 'curiosity') {
+      setIsExpanding(true);
+      setTimeout(() => {
+        const gallery = document.getElementById('gallery-section');
+        if (gallery) {
+          gallery.scrollIntoView({ behavior: 'smooth' });
+        }
+        setTimeout(() => setIsExpanding(false), 2000);
+      }, 300);
+    }
+  };
 
   if (!isMounted) return null;
 
@@ -151,6 +165,26 @@ export const NeuralConstellation: React.FC = () => {
               />
             ))}
           </g>
+
+          {/* Temporal Expansion Pulse (on Curiosity Click) */}
+          <AnimatePresence>
+            {isExpanding && (
+              <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.path
+                    key={`expansion-line-${i}`}
+                    d={`M 420,410 C ${420 + (i - 3.5) * 100},600 ${420 + (i - 3.5) * 200},800 ${420 + (i - 3.5) * 300},1200`}
+                    fill="none"
+                    stroke="rgba(139, 92, 246, 0.4)"
+                    strokeWidth="2"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                  />
+                ))}
+              </motion.g>
+            )}
+          </AnimatePresence>
 
           {/* Neural Strands / Hair */}
           <g filter="url(#master-bloom)">
@@ -307,6 +341,7 @@ export const NeuralConstellation: React.FC = () => {
           {NODES.map((node) => {
             const isVisible = visibleNodes.includes(node.id);
             const isActive = activeNode?.id === node.id;
+            const isCuriosity = node.id === 'curiosity';
 
             return (
               <g
@@ -314,6 +349,7 @@ export const NeuralConstellation: React.FC = () => {
                 className="cursor-pointer"
                 onMouseEnter={() => setActiveNode(node)}
                 onMouseLeave={() => setActiveNode(null)}
+                onClick={() => handleNodeClick(node)}
               >
                 <AnimatePresence>
                   {isVisible && (
@@ -344,10 +380,13 @@ export const NeuralConstellation: React.FC = () => {
                       <motion.circle
                         cx={node.x}
                         cy={node.y}
-                        r={isActive ? 14 : 5}
+                        r={isActive ? (isCuriosity ? 18 : 14) : 5}
                         fill={node.color}
                         initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
+                        animate={{ 
+                          scale: isCuriosity && isActive ? 1.2 : 1,
+                          opacity: isCuriosity && isActive ? 1 : 0.8
+                        }}
                         transition={{ type: "spring", stiffness: 200, damping: 20 }}
                         filter={`url(#glow-${node.id})`}
                         className="transition-all duration-700"
@@ -377,6 +416,20 @@ export const NeuralConstellation: React.FC = () => {
                       >
                         {node.label}
                       </motion.text>
+
+                      {isCuriosity && isActive && (
+                        <motion.g initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-none">
+                          <text 
+                            x={node.x} 
+                            y={node.y + 75} 
+                            textAnchor="middle" 
+                            fill="white" 
+                            className="text-[6px] uppercase tracking-[0.3em] font-medium opacity-40"
+                          >
+                            Click to expand through time
+                          </text>
+                        </motion.g>
+                      )}
                     </>
                   )}
                 </AnimatePresence>

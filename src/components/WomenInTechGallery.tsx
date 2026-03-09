@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -33,7 +34,10 @@ const WOMEN_FIGURES = [
 
 export const WomenInTechGallery: React.FC = () => {
   return (
-    <div className="relative py-48 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent">
+    <div id="gallery-section" className="relative py-48 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent">
+      {/* Decorative Constellation Connector Lines (Temporal Expansion Bridge) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-48 bg-gradient-to-b from-violet-500/50 to-transparent opacity-30" />
+      
       {/* Section Header */}
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
@@ -58,10 +62,15 @@ export const WomenInTechGallery: React.FC = () => {
         {WOMEN_FIGURES.map((woman, idx) => (
           <motion.div
             key={woman.name}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 1.2, delay: idx * 0.15 }}
+            transition={{ 
+              duration: 1.2, 
+              delay: idx * 0.2,
+              type: "spring",
+              stiffness: 50
+            }}
             className="group relative flex flex-col items-center"
           >
             {/* Holographic Shard Base / Pedestal */}
