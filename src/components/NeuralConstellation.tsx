@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -84,13 +83,11 @@ export const NeuralConstellation: React.FC = () => {
   const handleNodeClick = (node: NodeData) => {
     if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
-      // Wait for the light pulses to "travel" before scrolling - Much slower delay (1.5s)
       setTimeout(() => {
         const gallery = document.getElementById('gallery-section');
         if (gallery) {
           gallery.scrollIntoView({ behavior: 'smooth' });
         }
-        // Keep the lines visible long enough to feel connected - Reset after 6s
         setTimeout(() => setIsExpanding(false), 6000);
       }, 1500);
     }
@@ -167,7 +164,7 @@ export const NeuralConstellation: React.FC = () => {
             ))}
           </g>
 
-          {/* Temporal Expansion Pulse (on Curiosity Click) - Slower growth (4s) */}
+          {/* Temporal Expansion Pulse */}
           <AnimatePresence>
             {isExpanding && (
               <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -384,7 +381,7 @@ export const NeuralConstellation: React.FC = () => {
         </motion.g>
       </svg>
 
-      {/* Insight Shard - Reduced height for better composition */}
+      {/* Insight Shard */}
       <AnimatePresence>
         {activeNode && (
           <motion.div
@@ -416,19 +413,27 @@ export const NeuralConstellation: React.FC = () => {
             transition={{ duration: 3 }}
             className="absolute inset-0 flex items-center justify-center text-center z-50 bg-[#050508]"
           >
-            <div className="space-y-12">
+            <div className="space-y-6">
               <motion.div
                 initial={{ letterSpacing: "3em", opacity: 0 }}
                 animate={{ letterSpacing: "1.5em", opacity: 1 }}
                 transition={{ duration: 4 }}
               >
                 <p className="text-[10px] uppercase text-white/10 mb-8 tracking-[2.5em]">Neural Initialization</p>
-                <h1 className="text-7xl md:text-9xl font-bold text-white tracking-tighter italic">
-                  GENESIS<br />
+                <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter italic uppercase leading-tight">
+                  The Mind of a <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">
-                    DIGITAL
+                    Woman Developer
                   </span>
                 </h1>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2, duration: 2 }}
+                  className="mt-8 text-[10px] uppercase tracking-[0.8em] text-white/20 font-light"
+                >
+                  Where logic, creativity, empathy, <br className="md:hidden" /> and curiosity connect.
+                </motion.p>
               </motion.div>
             </div>
           </motion.div>

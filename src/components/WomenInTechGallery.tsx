@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -9,32 +8,32 @@ const WOMEN_FIGURES = [
   {
     name: "Ada Lovelace",
     image: "https://image2url.com/r2/default/images/1773030196135-abfefd18-0d7a-459e-a0dd-33c332ba03ac.png",
-    caption: "The first computer programmer.",
-    color: "#a855f7", // Creativity (Violet)
+    caption: "Often regarded as the first computer programmer.",
+    color: "#a855f7",
     nodeSource: "Creativity",
     startX: 400,
   },
   {
     name: "Grace Hopper",
     image: "https://image2url.com/r2/default/images/1773030220691-47d33614-a2f1-427a-a6f1-e79dc950c94b.png",
-    caption: "Pioneer of COBOL and modern languages.",
-    color: "#3b82f6", // Logic (Blue)
+    caption: "Pioneer of modern programming languages and creator of COBOL.",
+    color: "#3b82f6",
     nodeSource: "Logic",
     startX: 520,
   },
   {
     name: "Margaret Hamilton",
     image: "https://image2url.com/r2/default/images/1773030464884-ba20030d-6257-4673-9177-be1d42cf2029.png",
-    caption: "Lead Apollo guidance software engineer.",
-    color: "#f43f5e", // Empathy (Rose)
+    caption: "Led the development of the Apollo guidance software.",
+    color: "#f43f5e",
     nodeSource: "Empathy",
     startX: 300,
   },
   {
     name: "Radia Perlman",
     image: "https://image2url.com/r2/default/images/1773030535115-f2041c60-0d97-4275-bf7b-315f5bd4b94f.png",
-    caption: "Inventor of the Spanning Tree Protocol.",
-    color: "#22d3ee", // Collaboration (Cyan)
+    caption: "Invented key networking protocols fundamental to the modern internet.",
+    color: "#22d3ee",
     nodeSource: "Collaboration",
     startX: 560,
   }
@@ -44,7 +43,7 @@ export const WomenInTechGallery: React.FC = () => {
   return (
     <div id="gallery-section" className="relative py-64 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
-      {/* Constellation Bridge Lines: Staged Growth - Slower (5s) */}
+      {/* Constellation Bridge Lines */}
       <div className="absolute top-0 left-0 w-full h-[800px] pointer-events-none overflow-visible">
         <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
           {WOMEN_FIGURES.map((woman, idx) => {
@@ -61,7 +60,7 @@ export const WomenInTechGallery: React.FC = () => {
                 whileInView={{ pathLength: 1, opacity: 0.2 }}
                 viewport={{ once: true, margin: "0px 0px -200px 0px" }}
                 transition={{ 
-                  duration: 5.0, // Increased duration for a slower, more epic feel
+                  duration: 5.0,
                   delay: idx * 0.5, 
                   ease: [0.4, 0, 0.2, 1] 
                 }}
@@ -80,12 +79,12 @@ export const WomenInTechGallery: React.FC = () => {
         className="text-center mb-56 relative z-10"
       >
         <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-8 font-medium">
-          The Constellation Continues
+          The constellation that came before us.
         </p>
         <h2 className="text-5xl md:text-8xl font-bold text-white tracking-tighter italic uppercase leading-none">
-          Historical<br />
+          Women Who <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">
-            Precedents
+            Shaped the Code
           </span>
         </h2>
       </motion.div>
@@ -95,7 +94,6 @@ export const WomenInTechGallery: React.FC = () => {
         {WOMEN_FIGURES.map((woman, idx) => (
           <div key={woman.name} className="relative flex flex-col items-center">
             
-            {/* Stage 1: Star Particle Gathering - Slower (2.5s) */}
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               whileInView={{ scale: [0, 1.5, 1], opacity: [0, 1, 0.4] }}
@@ -105,7 +103,6 @@ export const WomenInTechGallery: React.FC = () => {
               style={{ backgroundColor: woman.color }}
             />
 
-            {/* Stage 2: Portrait Materialization - Slower (3.5s) */}
             <motion.div
               initial={{ opacity: 0, filter: 'blur(30px)', scale: 0.85, y: 40 }}
               whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
@@ -129,7 +126,7 @@ export const WomenInTechGallery: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
                 </motion.div>
 
-                {/* Stage 3: Pedestal and Typography Reveal - Slower (1.8s) */}
+                {/* Pedestal Panel */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -170,7 +167,6 @@ export const WomenInTechGallery: React.FC = () => {
                   />
                 </motion.div>
 
-                {/* Grounding Glow */}
                 <div 
                   className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-32 h-1 blur-xl opacity-20 group-hover:opacity-40 transition-all duration-1000" 
                   style={{ backgroundColor: woman.color }}
@@ -181,7 +177,7 @@ export const WomenInTechGallery: React.FC = () => {
         ))}
       </div>
 
-      {/* Footer Line */}
+      {/* Poetic Line Under Gallery */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
