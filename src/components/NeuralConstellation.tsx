@@ -1,74 +1,106 @@
-
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NODES, NodeData } from '@/lib/constants';
-import { Brain } from 'lucide-react';
+
+// Helper to generate complex brain-like neural paths
+const generateNeuralThreads = () => {
+  return Array.from({ length: 12 }).map((_, i) => {
+    const startX = 400 + (Math.random() - 0.5) * 100;
+    const startY = 350 + (Math.random() - 0.5) * 100;
+    const endX = 400 + (Math.random() - 0.5) * 350;
+    const endY = 350 + (Math.random() - 0.5) * 350;
+    const cp1x = startX + (Math.random() - 0.5) * 400;
+    const cp1y = startY + (Math.random() - 0.5) * 400;
+    const cp2x = endX + (Math.random() - 0.5) * 400;
+    const cp2y = endY + (Math.random() - 0.5) * 400;
+    return `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
+  });
+};
 
 export const NeuralConstellation: React.FC = () => {
   const [activeNode, setActiveNode] = useState<NodeData | null>(null);
   const [showBrain, setShowBrain] = useState(false);
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
+  const neuralThreads = useMemo(() => generateNeuralThreads(), []);
 
   useEffect(() => {
-    // Initial delay for brain formation
-    const brainTimer = setTimeout(() => setShowBrain(true), 1500);
-
-    // Sequential node illumination
+    const brainTimer = setTimeout(() => setShowBrain(true), 1000);
     NODES.forEach((node, index) => {
       setTimeout(() => {
         setVisibleNodes((prev) => [...prev, node.id]);
-      }, 3000 + index * 800);
+      }, 2500 + index * 600);
     });
-
-    return () => {
-      clearTimeout(brainTimer);
-    };
+    return () => clearTimeout(brainTimer);
   }, []);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-      {/* Background Brain Icon for subtle depth */}
-      <AnimatePresence>
-        {showBrain && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 0.1, scale: 1 }}
-            className="absolute z-0 pointer-events-none"
-          >
-            <Brain size={600} strokeWidth={0.5} className="text-white" />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <svg
         viewBox="0 0 800 700"
-        className="relative z-10 w-full max-w-4xl h-auto overflow-visible select-none"
+        className="relative z-10 w-full max-w-5xl h-auto overflow-visible select-none"
       >
         <defs>
           {NODES.map((node) => (
-            <filter id={`glow-${node.id}`} key={node.id}>
-              <feGaussianBlur stdDeviation="3.5" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
+            <filter id={`glow-${node.id}`} key={node.id} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
           ))}
           
-          <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.5" />
-            <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#ec4899" stopOpacity="0.5" />
+          <linearGradient id="thread-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.1" />
+            <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1" />
           </linearGradient>
+
+          <filter id="master-bloom">
+            <feGaussianBlur stdDeviation="2" result="blur1" />
+            <feGaussianBlur stdDeviation="4" result="blur2" />
+            <feMerge>
+              <feMergeNode in="blur1" />
+              <feMergeNode in="blur2" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
 
-        {/* Neural Network Connections */}
+        {/* Central Neural Structure (The "Alive" Brain) */}
         <AnimatePresence>
           {showBrain && (
-            <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 2 }}>
-              {/* Connecting Lines */}
+            <motion.g 
+              initial={{ opacity: 0, scale: 0.9 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              transition={{ duration: 3, ease: "easeOut" }}
+              filter="url(#master-bloom)"
+            >
+              {/* Organic Neural Threads */}
+              {neuralThreads.map((path, i) => (
+                <motion.path
+                  key={`thread-${i}`}
+                  d={path}
+                  fill="none"
+                  stroke="url(#thread-grad)"
+                  strokeWidth="0.5"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 0.6 }}
+                  transition={{ duration: 4, delay: i * 0.2, ease: "easeInOut" }}
+                />
+              ))}
+
+              {/* Core Circuitry Lines */}
+              <motion.path
+                d="M400,150 Q300,150 250,300 Q250,450 400,550 Q550,450 550,300 Q500,150 400,150 M400,200 L400,500 M300,350 L500,350"
+                fill="none"
+                stroke="rgba(255,255,255,0.08)"
+                strokeWidth="1"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 5 }}
+              />
+
+              {/* Network Connections between nodes */}
               {NODES.map((node, i) =>
                 NODES.slice(i + 1).map((target) => (
                   <motion.line
@@ -77,24 +109,24 @@ export const NeuralConstellation: React.FC = () => {
                     y1={node.y}
                     x2={target.x}
                     y2={target.y}
-                    stroke="url(#line-gradient)"
-                    strokeWidth="1"
-                    strokeOpacity="0.3"
+                    stroke={activeNode?.id === node.id || activeNode?.id === target.id ? target.color : "rgba(255,255,255,0.05)"}
+                    strokeWidth={activeNode?.id === node.id || activeNode?.id === target.id ? "1.5" : "0.5"}
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
-                    transition={{ duration: 3, ease: "easeInOut", delay: 1 }}
+                    transition={{ duration: 3, delay: 2 }}
                   />
                 ))
               )}
 
-              {/* Pulse Pulses between nodes */}
+              {/* Dynamic Pulses */}
               {NODES.map((node, i) => {
                 const target = NODES[(i + 1) % NODES.length];
+                const isActive = activeNode?.id === node.id;
                 return (
                   <motion.circle
                     key={`pulse-${node.id}`}
-                    r="2"
-                    fill="#fff"
+                    r={isActive ? 3 : 1.5}
+                    fill={node.color}
                     initial={{ opacity: 0 }}
                     animate={{
                       cx: [node.x, target.x],
@@ -102,10 +134,10 @@ export const NeuralConstellation: React.FC = () => {
                       opacity: [0, 0.8, 0],
                     }}
                     transition={{
-                      duration: 4,
+                      duration: isActive ? 1.5 : 4,
                       repeat: Infinity,
                       ease: "linear",
-                      delay: i * 1.5,
+                      delay: i * 0.8,
                     }}
                   />
                 );
@@ -114,23 +146,7 @@ export const NeuralConstellation: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Artistic Brain Pathways */}
-        <AnimatePresence>
-          {showBrain && (
-            <motion.path
-              d="M400,100 C300,100 250,200 250,300 C250,450 350,550 400,550 C450,550 550,450 550,300 C550,200 500,100 400,100 Z"
-              fill="none"
-              stroke="rgba(255,255,255,0.15)"
-              strokeWidth="2"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 4, ease: "easeInOut" }}
-              className="brain-line"
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Nodes */}
+        {/* Nodes and Labels */}
         {NODES.map((node) => {
           const isVisible = visibleNodes.includes(node.id);
           const isActive = activeNode?.id === node.id;
@@ -138,52 +154,77 @@ export const NeuralConstellation: React.FC = () => {
           return (
             <g
               key={node.id}
-              className="cursor-pointer"
+              className="cursor-pointer group"
               onMouseEnter={() => setActiveNode(node)}
               onMouseLeave={() => setActiveNode(null)}
             >
               <AnimatePresence>
                 {isVisible && (
                   <>
-                    {/* Node Core */}
+                    {/* Node Orbiting Particles */}
+                    {isActive && (
+                      <motion.g
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        {[0, 120, 240].map((angle, idx) => (
+                          <motion.circle
+                            key={`orbit-${idx}`}
+                            r="1.5"
+                            fill={node.color}
+                            animate={{
+                              cx: [
+                                node.x + Math.cos((angle * Math.PI) / 180) * 25,
+                                node.x + Math.cos(((angle + 360) * Math.PI) / 180) * 25,
+                              ],
+                              cy: [
+                                node.y + Math.sin((angle * Math.PI) / 180) * 25,
+                                node.y + Math.sin(((angle + 360) * Math.PI) / 180) * 25,
+                              ],
+                            }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                          />
+                        ))}
+                      </motion.g>
+                    )}
+
+                    {/* Node Luminous Core */}
                     <motion.circle
                       cx={node.x}
                       cy={node.y}
-                      r={isActive ? 12 : 8}
+                      r={isActive ? 14 : 6}
                       fill={node.color}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 15 }}
                       filter={`url(#glow-${node.id})`}
-                      className="animate-pulse-glow"
+                      className="transition-all duration-500"
                     />
 
-                    {/* Node Hover Aura */}
-                    {isActive && (
-                      <motion.circle
-                        cx={node.x}
-                        cy={node.y}
-                        r={24}
-                        stroke={node.color}
-                        strokeWidth="1"
-                        fill="none"
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 0.4 }}
-                        exit={{ scale: 1.5, opacity: 0 }}
-                      />
-                    )}
+                    {/* Pulsing Halos */}
+                    <motion.circle
+                      cx={node.x}
+                      cy={node.y}
+                      r={isActive ? 35 : 15}
+                      stroke={node.color}
+                      strokeWidth="0.5"
+                      fill="none"
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.3, 0.1] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    />
 
-                    {/* Node Label */}
+                    {/* Refined Label */}
                     <motion.text
                       x={node.x}
-                      y={node.y - 25}
+                      y={node.y + (node.y > 350 ? 45 : -35)}
                       textAnchor="middle"
-                      fill="#fff"
-                      fontSize="14"
-                      fontWeight="500"
-                      initial={{ opacity: 0, y: node.y - 15 }}
-                      animate={{ opacity: 1, y: node.y - 25 }}
-                      className="font-body tracking-wider uppercase opacity-80"
+                      fill={isActive ? node.color : "rgba(255,255,255,0.6)"}
+                      fontSize="10"
+                      fontWeight="600"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="font-body tracking-[0.4em] uppercase pointer-events-none transition-colors duration-300"
                     >
                       {node.label}
                     </motion.text>
@@ -195,48 +236,59 @@ export const NeuralConstellation: React.FC = () => {
         })}
       </svg>
 
-      {/* Insight Overlay */}
+      {/* Premium Insight Panel */}
       <AnimatePresence>
         {activeNode && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 max-w-md w-[90%] bg-black/40 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-2xl z-50 text-center"
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: 20 }}
+            className="absolute bottom-16 left-1/2 -translate-x-1/2 max-w-lg w-[90%] glass-morphism p-8 rounded-3xl z-50 text-center"
           >
+            <div className="mb-4 inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10">
+              <span className="text-[10px] uppercase tracking-[0.3em] text-white/50">Core Faculty</span>
+            </div>
             <h3 
-              className="text-xl font-bold mb-2 tracking-tight uppercase"
-              style={{ color: activeNode.color }}
+              className="text-3xl font-bold mb-4 tracking-tighter uppercase italic"
+              style={{ color: activeNode.color, textShadow: `0 0 20px ${activeNode.color}44` }}
             >
               {activeNode.label}
             </h3>
-            <p className="text-sm text-foreground/80 leading-relaxed font-light">
+            <p className="text-base text-white/70 leading-relaxed font-light tracking-wide">
               {activeNode.insight}
             </p>
+            <div className="mt-6 flex justify-center gap-1 opacity-30">
+              {[1, 2, 3].map(i => <div key={i} className="w-8 h-[1px] bg-white" />)}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Intro Text */}
+      {/* Intro Typographic Experience */}
       <AnimatePresence>
         {!showBrain && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.5 }}
-            className="absolute inset-0 flex items-center justify-center text-center px-4"
+            transition={{ duration: 2 }}
+            className="absolute inset-0 flex items-center justify-center text-center z-50"
           >
-            <div className="space-y-4">
-              <h1 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter text-white/90">
-                THE MIND OF A<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-pink-400">
-                  WOMAN DEVELOPER
-                </span>
-              </h1>
-              <p className="text-white/40 font-body text-sm md:text-base tracking-widest uppercase">
-                A conceptual visualization of diverse thinking
-              </p>
+            <div className="space-y-6">
+              <motion.div
+                initial={{ letterSpacing: "1em", opacity: 0 }}
+                animate={{ letterSpacing: "0.4em", opacity: 1 }}
+                transition={{ duration: 2, ease: "easeOut" }}
+              >
+                <p className="text-xs uppercase text-white/40 mb-2">Immersive Visualization</p>
+                <h1 className="text-5xl md:text-8xl font-headline font-bold text-white/95 tracking-tighter">
+                  THE MIND OF A<br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-pink-400">
+                    DEVELOPER
+                  </span>
+                </h1>
+              </motion.div>
+              <div className="w-12 h-[1px] bg-white/20 mx-auto" />
             </div>
           </motion.div>
         )}
