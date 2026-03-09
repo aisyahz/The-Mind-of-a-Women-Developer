@@ -85,14 +85,15 @@ export const NeuralConstellation: React.FC = () => {
   const handleNodeClick = (node: NodeData) => {
     if (node.id === 'curiosity') {
       setIsExpanding(true);
-      // Slower, more intentional scroll delay to match cinematic lines
+      // Wait for the light pulses to "travel" before scrolling
       setTimeout(() => {
         const gallery = document.getElementById('gallery-section');
         if (gallery) {
           gallery.scrollIntoView({ behavior: 'smooth' });
         }
-        setTimeout(() => setIsExpanding(false), 3000);
-      }, 800);
+        // Keep the lines visible long enough to feel connected
+        setTimeout(() => setIsExpanding(false), 3500);
+      }, 600);
     }
   };
 
@@ -171,16 +172,17 @@ export const NeuralConstellation: React.FC = () => {
           <AnimatePresence>
             {isExpanding && (
               <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                {Array.from({ length: 12 }).map((_, i) => (
+                {/* Four specific lines targeting the gallery figures */}
+                {[0, 1, 2, 3].map((idx) => (
                   <motion.path
-                    key={`expansion-line-${i}`}
-                    d={`M 420,410 C ${420 + (i - 5.5) * 80},600 ${420 + (i - 5.5) * 150},900 ${420 + (i - 5.5) * 250},1500`}
+                    key={`expansion-line-${idx}`}
+                    d={`M 420,410 C ${420},600 ${150 + idx * 250},800 ${150 + idx * 250},1500`}
                     fill="none"
-                    stroke="rgba(139, 92, 246, 0.3)"
-                    strokeWidth="1.5"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2.5, ease: "easeInOut" }}
+                    stroke="rgba(139, 92, 246, 0.5)"
+                    strokeWidth="2"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: [0, 1, 0.4] }}
+                    transition={{ duration: 2, ease: [0.4, 0, 0.2, 1], delay: idx * 0.1 }}
                   />
                 ))}
               </motion.g>
@@ -367,7 +369,7 @@ export const NeuralConstellation: React.FC = () => {
                             fill="white" 
                             className="text-[6px] uppercase tracking-[0.4em] font-medium opacity-30"
                           >
-                            Expand Constellation
+                            Discover the pioneers
                           </text>
                         </motion.g>
                       )}
