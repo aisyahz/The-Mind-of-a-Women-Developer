@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NODES, NodeData } from '@/lib/constants';
 
 // Helper to generate complex brain-like neural paths
 const generateNeuralThreads = () => {
-  return Array.from({ length: 18 }).map((_, i) => {
+  return Array.from({ length: 18 }).map(() => {
     const startX = 400 + (Math.random() - 0.5) * 120;
     const startY = 350 + (Math.random() - 0.5) * 120;
     const endX = 400 + (Math.random() - 0.5) * 450;
@@ -34,11 +34,15 @@ export const NeuralConstellation: React.FC = () => {
   const [activeNode, setActiveNode] = useState<NodeData | null>(null);
   const [showBrain, setShowBrain] = useState(false);
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
+  const [neuralThreads, setNeuralThreads] = useState<string[]>([]);
+  const [incomingStreams, setIncomingStreams] = useState<any[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
   
-  const neuralThreads = useMemo(() => generateNeuralThreads(), []);
-  const incomingStreams = useMemo(() => generateIncomingStreams(), []);
-
   useEffect(() => {
+    setIsMounted(true);
+    setNeuralThreads(generateNeuralThreads());
+    setIncomingStreams(generateIncomingStreams());
+
     const brainTimer = setTimeout(() => setShowBrain(true), 1200);
     NODES.forEach((node, index) => {
       setTimeout(() => {
@@ -47,6 +51,12 @@ export const NeuralConstellation: React.FC = () => {
     });
     return () => clearTimeout(brainTimer);
   }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent" />
+    );
+  }
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
@@ -180,7 +190,6 @@ export const NeuralConstellation: React.FC = () => {
                       animate={{ pathLength: 1, opacity: 0.5 }}
                       transition={{ duration: 5, delay: i * 0.1, ease: "easeInOut" }}
                     />
-                    {/* Occasional Sparkle/Shimmer */}
                     <motion.circle
                       r="1.2"
                       fill="white"
