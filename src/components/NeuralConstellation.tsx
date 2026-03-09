@@ -55,7 +55,11 @@ const generateHairStrands = () => {
   });
 };
 
-export const NeuralConstellation: React.FC = () => {
+interface NeuralConstellationProps {
+  onExplore?: () => void;
+}
+
+export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExplore }) => {
   const [activeNode, setActiveNode] = useState<NodeData | null>(null);
   const [showBrain, setShowBrain] = useState(false);
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
@@ -83,6 +87,11 @@ export const NeuralConstellation: React.FC = () => {
   const handleNodeClick = (node: NodeData) => {
     if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
+      
+      // Trigger exploration state in parent
+      onExplore?.();
+
+      // Slow cinematic transition
       setTimeout(() => {
         const gallery = document.getElementById('gallery-section');
         if (gallery) {
