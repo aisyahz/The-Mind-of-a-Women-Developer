@@ -27,9 +27,12 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const [showBrain, setShowBrain] = useState(false);
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
   const [isExpanding, setIsExpanding] = useState(false);
-  const [neuralThreads] = useState(generateNeuralThreads);
+  const [neuralThreads, setNeuralThreads] = useState<string[]>([]);
   
   useEffect(() => {
+    // Generate threads only on client mount to avoid hydration mismatch
+    setNeuralThreads(generateNeuralThreads());
+
     const brainTimer = setTimeout(() => setShowBrain(true), 3500);
     NODES.forEach((node, index) => {
       setTimeout(() => {
