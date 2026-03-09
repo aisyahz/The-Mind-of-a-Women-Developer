@@ -33,6 +33,29 @@
   }
   body {
     @apply bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.3) hsl(var(--background));
+  }
+
+  /* Custom Scrollbar for Webkit Browsers */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.3), rgba(244, 63, 94, 0.2));
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, rgba(59, 130, 246, 0.5), rgba(139, 92, 246, 0.6), rgba(244, 63, 94, 0.5));
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
   }
 }
 
