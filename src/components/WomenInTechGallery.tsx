@@ -64,6 +64,7 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
   const [viewedIndices, setViewedIndices] = useState<Set<number>>(new Set([0]));
 
   const currentWoman = WOMEN_FIGURES[activeIndex];
+  const allViewed = viewedIndices.size === WOMEN_FIGURES.length;
 
   const handleNavClick = (index: number) => {
     setActiveIndex(index);
@@ -72,12 +73,15 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
   };
 
   const handleLegacyClick = () => {
-    if (isTransitioning) return;
+    if (!allViewed || isTransitioning) return;
     setIsTransitioning(true);
-    onLegacyComplete?.();
+    
+    // Staged cinematic sequence
+    setTimeout(() => {
+      onLegacyComplete?.();
+    }, 2500); // Wait for the "growing line" animation to start its descent
   };
 
-  // Auto-highlight hero node when active pioneer changes
   useEffect(() => {
     onPioneerHover(currentWoman.heroNodeId);
     return () => onPioneerHover(null);
@@ -86,13 +90,13 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
   return (
     <div id="gallery-section" className="relative py-32 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
-      {/* Background Atmosphere */}
+      {/* Background Atmosphere Labels */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
         <svg viewBox="0 0 1200 800" className="w-full h-full">
           {WOMEN_FIGURES.map((woman, idx) => (
             <motion.g 
               key={`bg-label-${idx}`}
-              animate={{ opacity: activeIndex === idx ? 0.6 : 0.1 }}
+              animate={{ opacity: activeIndex === idx ? 0.6 : 0.05 }}
             >
               <text
                 x={150 + (idx * 300)} y={600 + (Math.sin(idx) * 50)}
@@ -158,8 +162,6 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
               </motion.span>
             </button>
           ))}
-          
-          {/* Connecting Line behind Orbs */}
           <div className="absolute top-1.5 left-0 right-0 h-[1px] bg-white/5 -z-10" />
         </div>
       </motion.div>
@@ -213,6 +215,13 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
                   />
                 </motion.div>
               ))}
+              
+              {/* Halos */}
+              <motion.div 
+                animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="absolute -inset-10 border border-white/10 rounded-full pointer-events-none"
+              />
             </div>
 
             {/* Content Details */}
@@ -225,11 +234,9 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
                   {currentWoman.name}
                 </h3>
               </div>
-              
               <p className="text-xs md:text-sm text-white/60 leading-relaxed tracking-wide">
                 {currentWoman.caption}
               </p>
-
               <motion.p 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -244,27 +251,55 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
       </div>
 
       {/* Legacy Gateway Interaction */}
-      <div className="relative flex flex-col items-center justify-center mt-12 pb-24">
+      <div className="relative flex flex-col items-center justify-center mt-24 pb-32">
         
-        {/* Connection to Legacy */}
-        <div className="absolute inset-0 -top-[100px] w-full h-[200px] pointer-events-none z-0">
-          <svg viewBox="0 0 1200 200" className="w-full h-full overflow-visible">
-            <motion.path
-              d="M 600,0 C 600,50 600,100 600,150"
-              fill="none"
-              stroke="white"
-              strokeWidth="0.5"
-              strokeOpacity="0.2"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: viewedIndices.size === 4 ? 1 : 0 }}
-            />
+        {/* Converging Lines to Legacy Core */}
+        <div className="absolute inset-0 -top-[300px] w-full h-[600px] pointer-events-none z-0">
+          <svg viewBox="0 0 1200 600" className="w-full h-full overflow-visible">
+            {WOMEN_FIGURES.map((woman, idx) => (
+              <motion.path
+                key={`converge-${woman.id}`}
+                d={`M ${150 + (idx * 300)},0 C ${150 + (idx * 300)},200 600,200 600,450`}
+                fill="none"
+                stroke={woman.color}
+                strokeWidth="0.8"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ 
+                  pathLength: viewedIndices.has(idx) ? 1 : 0, 
+                  opacity: isTransitioning ? [0.4, 1, 0] : (viewedIndices.has(idx) ? 0.2 : 0)
+                }}
+                transition={{ 
+                  duration: isTransitioning ? 1.5 : 2, 
+                  ease: "easeInOut",
+                  opacity: isTransitioning ? { duration: 2, times: [0, 0.5, 1] } : {}
+                }}
+              />
+            ))}
+            
+            {/* The Descent Line */}
+            <AnimatePresence>
+              {isTransitioning && (
+                <motion.path
+                  d="M 600,450 L 600,1200"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: [0, 1, 0.4] }}
+                  transition={{ duration: 4, ease: "easeInOut" }}
+                />
+              )}
+            </AnimatePresence>
           </svg>
         </div>
 
         <div className="relative flex flex-col items-center z-10">
           <motion.p 
-            animate={{ opacity: viewedIndices.size === 4 ? 0.6 : 0.1 }}
-            className="text-[9px] uppercase tracking-[1em] text-white font-bold mb-8 whitespace-nowrap"
+            animate={{ 
+              opacity: allViewed ? (legacyHovered ? 1 : 0.6) : 0.1,
+              filter: allViewed ? 'blur(0px)' : 'blur(2px)'
+            }}
+            className="text-[10px] uppercase tracking-[1.2em] text-white font-bold mb-10 whitespace-nowrap glow-sm"
           >
             Legacy continues
           </motion.p>
@@ -273,53 +308,98 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
             onMouseEnter={() => setLegacyHovered(true)}
             onMouseLeave={() => setLegacyHovered(false)}
             onClick={handleLegacyClick}
-            className={`relative flex items-center justify-center group ${viewedIndices.size === 4 ? 'cursor-none' : 'cursor-not-allowed opacity-20'}`}
+            className={`relative flex items-center justify-center group ${allViewed ? 'cursor-none' : 'cursor-not-allowed opacity-20'}`}
           >
+            {/* Halo Expansion */}
             <AnimatePresence>
-              {(legacyHovered || isTransitioning) && viewedIndices.size === 4 && (
+              {(legacyHovered || isTransitioning) && allViewed && (
                 <>
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1.5, opacity: 0.2 }}
+                    animate={{ scale: isTransitioning ? 20 : 2, opacity: isTransitioning ? 0 : 0.3 }}
                     exit={{ scale: 0, opacity: 0 }}
-                    className="absolute w-32 h-32 rounded-full bg-primary blur-[40px]"
+                    className="absolute w-32 h-32 rounded-full bg-primary blur-[50px]"
+                    transition={{ duration: isTransitioning ? 2 : 0.5 }}
                   />
-                  {[1, 2].map((i) => (
+                  {[1, 2, 3].map((i) => (
                     <motion.div
                       key={`ring-${i}`}
                       initial={{ scale: 1, opacity: 0 }}
-                      animate={{ scale: 2.5, opacity: 0 }}
-                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                      className="absolute w-16 h-16 border border-white/20 rounded-full"
+                      animate={{ 
+                        scale: isTransitioning ? 3 : (legacyHovered ? 2.5 : 2), 
+                        opacity: isTransitioning ? 0 : [0, 0.2, 0] 
+                      }}
+                      transition={{ 
+                        duration: isTransitioning ? 1 : 3, 
+                        repeat: isTransitioning ? 0 : Infinity, 
+                        delay: i * 0.4 
+                      }}
+                      className="absolute w-20 h-20 border border-white/20 rounded-full"
                     />
                   ))}
                 </>
               )}
             </AnimatePresence>
 
+            {/* Core Node */}
             <motion.div
               animate={{
-                scale: isTransitioning ? [1, 20, 1] : (legacyHovered ? 1.4 : 1),
-                opacity: isTransitioning ? [1, 0, 0] : 1,
-                backgroundColor: viewedIndices.size === 4 ? "#fff" : "#333",
-                boxShadow: legacyHovered && viewedIndices.size === 4
-                  ? "0 0 40px rgba(139, 92, 246, 0.8)" 
-                  : "0 0 10px rgba(255, 255, 255, 0.1)"
+                scale: isTransitioning ? [1, 2.5, 0.8] : (legacyHovered ? 1.4 : 1),
+                opacity: isTransitioning ? [1, 1, 0] : 1,
+                backgroundColor: allViewed ? "#fff" : "#333",
+                boxShadow: legacyHovered && allViewed
+                  ? "0 0 60px rgba(255, 255, 255, 0.9), 0 0 100px rgba(139, 92, 246, 0.8)" 
+                  : "0 0 15px rgba(255, 255, 255, 0.2)"
               }}
-              transition={{ duration: isTransitioning ? 1.5 : 0.5 }}
-              className={`w-4 h-4 rounded-full relative z-20`}
+              transition={{ duration: isTransitioning ? 2 : 0.5, ease: "easeInOut" }}
+              className={`w-5 h-5 rounded-full relative z-20`}
             />
+
+            {/* Orbital Particles on Hover */}
+            {legacyHovered && allViewed && !isTransitioning && (
+              <div className="absolute inset-0 pointer-events-none">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={`p-orbit-${i}`}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear", delay: i * 0.3 }}
+                    className="absolute inset-0"
+                  >
+                    <div 
+                      className="absolute w-1 h-1 bg-white rounded-full blur-[0.5px]"
+                      style={{ 
+                        top: '50%', 
+                        left: '50%', 
+                        transform: `translate(${30}px, -50%)`,
+                        boxShadow: '0 0 10px white' 
+                      }}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </motion.div>
 
-          <motion.p 
+          <motion.div 
             animate={{ 
-              opacity: legacyHovered && viewedIndices.size === 4 ? 1 : 0.2,
-              y: legacyHovered ? 5 : 0
+              opacity: legacyHovered && allViewed ? 1 : 0.2,
+              y: legacyHovered ? 10 : 0
             }}
-            className="text-[8px] uppercase tracking-[0.6em] text-white font-medium mt-8 transition-all duration-700"
+            className="text-center mt-12 space-y-4"
           >
-            {isTransitioning ? "Traveling through history..." : (viewedIndices.size === 4 ? "Click to follow the constellation" : "Explore all pioneers to continue")}
-          </motion.p>
+            <p className="text-[9px] uppercase tracking-[0.6em] text-white font-medium transition-all duration-700">
+              {isTransitioning ? "Traveling through time..." : (allViewed ? "Follow the constellation" : `Explore ${WOMEN_FIGURES.length - viewedIndices.size} more pioneers`)}
+            </p>
+            {allViewed && !isTransitioning && (
+               <motion.div 
+                 animate={{ y: [0, 5, 0] }} 
+                 transition={{ repeat: Infinity, duration: 2 }}
+                 className="flex justify-center"
+               >
+                 <div className="w-[1px] h-6 bg-gradient-to-b from-white to-transparent" />
+               </motion.div>
+            )}
+          </motion.div>
         </div>
       </div>
     </div>
