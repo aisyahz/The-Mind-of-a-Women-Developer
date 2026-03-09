@@ -45,14 +45,14 @@ export default function Home() {
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)] z-5" />
       </section>
 
-      {/* Conditional Content: Only visible after Curiosity is clicked */}
+      {/* Conditional Content: Revealed after curiosity node is clicked */}
       <AnimatePresence>
         {isExplored && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 2, ease: "easeInOut" }}
-            className="w-full"
+            className="w-full flex flex-col"
           >
             {/* Gallery Section: Women Who Shaped the Code */}
             <section className="relative w-full z-20 bg-transparent">
@@ -60,9 +60,9 @@ export default function Home() {
             </section>
 
             {/* Poetic Ending Section */}
-            <section className="relative w-full h-screen flex flex-col items-center justify-center z-20 bg-transparent py-32">
+            <section className="relative w-full py-32 flex flex-col items-center justify-center z-20 bg-transparent">
               <div className="text-center space-y-8 max-w-2xl px-6">
-                <div className="flex justify-center gap-4 mb-12">
+                <div className="flex justify-center gap-4 mb-8">
                   {[0, 1, 2].map((i) => (
                     <div 
                       key={i} 
@@ -83,14 +83,14 @@ export default function Home() {
                   Every line of code <br className="md:hidden" /> writes the future.
                 </p>
 
-                <div className="pt-24 opacity-10">
-                  <div className="w-px h-32 bg-gradient-to-b from-white to-transparent mx-auto" />
+                <div className="pt-16 opacity-10">
+                  <div className="w-px h-24 bg-gradient-to-b from-white to-transparent mx-auto" />
                 </div>
               </div>
 
-              {/* Floating background nodes for the ending */}
+              {/* Decorative nodes for the background */}
               <div className="absolute inset-0 pointer-events-none -z-10">
-                {[...Array(15)].map((_, i) => (
+                {[...Array(12)].map((_, i) => (
                   <div
                     key={i}
                     className="absolute w-1 h-1 bg-white rounded-full opacity-0 animate-pulse"
@@ -99,7 +99,7 @@ export default function Home() {
                       left: `${Math.random() * 100}%`,
                       animationDelay: `${Math.random() * 5}s`,
                       animationDuration: `${3 + Math.random() * 4}s`,
-                      opacity: 0.1 + Math.random() * 0.2
+                      opacity: 0.05 + Math.random() * 0.1
                     }}
                   />
                 ))}

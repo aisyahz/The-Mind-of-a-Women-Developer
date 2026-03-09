@@ -41,28 +41,28 @@ const WOMEN_FIGURES = [
 
 export const WomenInTechGallery: React.FC = () => {
   return (
-    <div id="gallery-section" className="relative py-64 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
+    <div id="gallery-section" className="relative py-32 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
       {/* Constellation Bridge Lines */}
-      <div className="absolute top-0 left-0 w-full h-[800px] pointer-events-none overflow-visible">
-        <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
+      <div className="absolute top-0 left-0 w-full h-[600px] pointer-events-none overflow-visible">
+        <svg viewBox="0 0 1200 600" className="w-full h-full preserve-3d">
           {WOMEN_FIGURES.map((woman, idx) => {
             const startX = woman.startX || (300 + idx * 200);
             const endX = 150 + (idx * 300);
             return (
               <motion.path
                 key={`bridge-line-${idx}`}
-                d={`M ${startX},-200 C ${startX},200 ${endX},300 ${endX},600`}
+                d={`M ${startX},-100 C ${startX},100 ${endX},200 ${endX},500`}
                 fill="none"
                 stroke={woman.color}
                 strokeWidth="1.2"
                 initial={{ pathLength: 0, opacity: 0 }}
-                whileInView={{ pathLength: 1, opacity: 0.2 }}
-                viewport={{ once: true, margin: "0px 0px -200px 0px" }}
+                whileInView={{ pathLength: 1, opacity: 0.15 }}
+                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
                 transition={{ 
-                  duration: 3.0,
-                  delay: idx * 0.3, 
-                  ease: [0.4, 0, 0.2, 1] 
+                  duration: 2.0,
+                  delay: idx * 0.2, 
+                  ease: "easeInOut" 
                 }}
               />
             );
@@ -72,13 +72,13 @@ export const WomenInTechGallery: React.FC = () => {
 
       {/* Section Header */}
       <motion.div 
-        initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
+        initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="text-center mb-56 relative z-10"
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        className="text-center mb-32 relative z-10"
       >
-        <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-8 font-medium">
+        <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-6 font-medium">
           The constellation that came before us.
         </p>
         <h2 className="text-5xl md:text-8xl font-bold text-white tracking-tighter italic uppercase leading-none">
@@ -90,37 +90,37 @@ export const WomenInTechGallery: React.FC = () => {
       </motion.div>
 
       {/* Figures Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-32 md:gap-16 max-w-7xl w-full px-4 relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-24 md:gap-12 max-w-7xl w-full px-4 relative z-10">
         {WOMEN_FIGURES.map((woman, idx) => (
           <div key={woman.name} className="relative flex flex-col items-center">
             
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
-              whileInView={{ scale: [0, 1.5, 1], opacity: [0, 1, 0.4] }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1.5, delay: 0.8 + idx * 0.2, ease: "easeOut" }}
+              whileInView={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.3] }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1.2, delay: 0.5 + idx * 0.1, ease: "easeOut" }}
               className="absolute top-20 w-4 h-4 rounded-full blur-xl"
               style={{ backgroundColor: woman.color }}
             />
 
             <motion.div
-              initial={{ opacity: 0, filter: 'blur(30px)', scale: 0.85, y: 40 }}
+              initial={{ opacity: 0, filter: 'blur(20px)', scale: 0.9, y: 30 }}
               whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 2.0, delay: 1.2 + idx * 0.2, ease: [0.16, 1, 0.3, 1] }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1.5, delay: 0.7 + idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="group relative flex flex-col items-center w-full"
             >
               <div className="relative w-full flex flex-col items-center">
                 
                 {/* Portrait */}
                 <motion.div 
-                  className="relative w-64 h-80 z-10 -mb-12 transition-all duration-1000 ease-out group-hover:-translate-y-8"
+                  className="relative w-56 h-72 z-10 -mb-10 transition-all duration-700 ease-out group-hover:-translate-y-6"
                 >
                   <Image 
                     src={woman.image}
                     alt={woman.name}
                     fill
-                    className="object-contain filter grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 group-hover:drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] transition-all duration-1000"
+                    className="object-contain filter grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 group-hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.08)] transition-all duration-700"
                     sizes="(max-width: 768px) 100vw, 25vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
@@ -128,47 +128,47 @@ export const WomenInTechGallery: React.FC = () => {
 
                 {/* Pedestal Panel */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1.2, delay: 2.2 + idx * 0.2 }}
-                  className="relative w-full max-w-[240px] pt-20 pb-12 px-8 flex flex-col items-center justify-center overflow-hidden"
+                  transition={{ duration: 1.0, delay: 1.2 + idx * 0.1 }}
+                  className="relative w-full max-w-[220px] pt-16 pb-10 px-6 flex flex-col items-center justify-center overflow-hidden"
                   style={{
                     clipPath: 'polygon(15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%)',
                   }}
                 >
-                  <div className="absolute inset-0 glass-morphism -z-10 bg-white/[0.02] border-white/5 group-hover:bg-white/[0.08] transition-all duration-700" />
+                  <div className="absolute inset-0 glass-morphism -z-10 bg-white/[0.02] border-white/5 group-hover:bg-white/[0.06] transition-all duration-500" />
                   
-                  <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[7px] uppercase tracking-[0.6em] text-white/20 font-bold whitespace-nowrap">
+                  <div className="absolute top-5 left-1/2 -translate-x-1/2 text-[7px] uppercase tracking-[0.6em] text-white/20 font-bold whitespace-nowrap">
                     {woman.nodeSource} Branch
                   </div>
 
                   <motion.div 
-                    className="absolute top-0 left-0 right-0 h-[1.5px] opacity-10 group-hover:opacity-100 transition-opacity duration-700"
-                    style={{ backgroundColor: woman.color, boxShadow: `0 0 25px ${woman.color}` }}
+                    className="absolute top-0 left-0 right-0 h-[1px] opacity-10 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ backgroundColor: woman.color, boxShadow: `0 0 20px ${woman.color}` }}
                   />
 
-                  <div className="text-center space-y-4 z-20">
-                    <h3 className="text-xl font-bold text-white tracking-[0.15em] uppercase italic group-hover:text-white transition-colors duration-500">
+                  <div className="text-center space-y-3 z-20">
+                    <h3 className="text-lg font-bold text-white tracking-[0.12em] uppercase italic group-hover:text-white transition-colors duration-400">
                       {woman.name}
                     </h3>
                     
-                    <div className="h-[1px] w-8 bg-white/10 mx-auto transition-all duration-700 group-hover:w-16" 
+                    <div className="h-[1px] w-6 bg-white/10 mx-auto transition-all duration-500 group-hover:w-12" 
                          style={{ backgroundColor: woman.color }} 
                     />
                     
-                    <p className="text-[10px] text-white/30 uppercase tracking-[0.25em] leading-relaxed max-w-[160px] mx-auto group-hover:text-white/60 transition-all duration-700">
+                    <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed max-w-[140px] mx-auto group-hover:text-white/60 transition-all duration-500">
                       {woman.caption}
                     </p>
                   </div>
 
                   <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1500"
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
                   />
                 </motion.div>
 
                 <div 
-                  className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-32 h-1 blur-xl opacity-20 group-hover:opacity-40 transition-all duration-1000" 
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-24 h-1 blur-xl opacity-20 group-hover:opacity-40 transition-all duration-700" 
                   style={{ backgroundColor: woman.color }}
                 />
               </div>
@@ -182,17 +182,17 @@ export const WomenInTechGallery: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.5, delay: 0.5 }}
-        className="mt-72 text-center relative z-10"
+        transition={{ duration: 1.2, delay: 0.3 }}
+        className="mt-48 text-center relative z-10"
       >
-        <div className="w-16 h-[1px] bg-white/10 mx-auto mb-12" />
-        <p className="text-[10px] uppercase tracking-[1em] text-white/20 italic leading-loose max-w-md mx-auto">
+        <div className="w-12 h-[1px] bg-white/10 mx-auto mb-10" />
+        <p className="text-[10px] uppercase tracking-[0.8em] text-white/20 italic leading-loose max-w-sm mx-auto">
           Innovation is not a single mind.<br />
           It is a constellation of pioneers.
         </p>
       </motion.div>
 
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_bottom,rgba(139,92,246,0.03)_0%,transparent_70%)] -z-10" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_bottom,rgba(139,92,246,0.02)_0%,transparent_70%)] -z-10" />
     </div>
   );
 };

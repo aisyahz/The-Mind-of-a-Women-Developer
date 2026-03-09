@@ -88,17 +88,17 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
     if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
       
-      // Trigger exploration state in parent
+      // Trigger exploration state in parent immediately
       onExplore?.();
 
-      // Slightly faster cinematic transition
+      // Faster cinematic transition to the gallery
       setTimeout(() => {
         const gallery = document.getElementById('gallery-section');
         if (gallery) {
           gallery.scrollIntoView({ behavior: 'smooth' });
         }
-        setTimeout(() => setIsExpanding(false), 4000);
-      }, 1200);
+        setTimeout(() => setIsExpanding(false), 3000);
+      }, 1000);
     }
   };
 
@@ -180,14 +180,14 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                 {[0, 1, 2, 3].map((idx) => (
                   <motion.path
                     key={`expansion-line-${idx}`}
-                    d={`M 420,410 C ${420},600 ${150 + idx * 250},800 ${150 + idx * 250},1500`}
+                    d={`M 420,410 C ${420},500 ${150 + idx * 250},700 ${150 + idx * 250},1200`}
                     fill="none"
-                    stroke="rgba(139, 92, 246, 0.5)"
-                    strokeWidth="2"
+                    stroke="rgba(139, 92, 246, 0.4)"
+                    strokeWidth="1.5"
                     initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: [0, 1, 0.4] }}
+                    animate={{ pathLength: 1, opacity: [0, 0.8, 0.3] }}
                     transition={{ 
-                      duration: 3.0, 
+                      duration: 2.5, 
                       ease: [0.4, 0, 0.2, 1], 
                       delay: idx * 0.1 
                     }}
@@ -424,19 +424,19 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       <AnimatePresence>
         {activeNode && (
           <motion.div
-            initial={{ opacity: 0, y: 40, filter: 'blur(15px)' }}
+            initial={{ opacity: 0, y: 30, filter: 'blur(15px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: 30, filter: 'blur(15px)' }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 max-w-[280px] w-[80%] glass-morphism p-5 rounded-[1.5rem] z-50 text-center border-white/5 shadow-2xl"
+            exit={{ opacity: 0, y: 20, filter: 'blur(15px)' }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 max-w-[260px] w-[80%] glass-morphism p-4 rounded-[1.2rem] z-50 text-center border-white/5 shadow-2xl"
           >
             <h3 
-              className="text-xl font-bold mb-2 tracking-wider uppercase italic"
+              className="text-lg font-bold mb-1.5 tracking-wider uppercase italic"
               style={{ color: activeNode.color }}
             >
               {activeNode.label}
             </h3>
 
-            <p className="text-[11px] text-white/60 leading-relaxed font-light italic">
+            <p className="text-[10px] text-white/60 leading-relaxed font-light italic">
               "{activeNode.insight}"
             </p>
           </motion.div>
