@@ -75,11 +75,11 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
     setIncomingStreams(generateIncomingStreams());
     setHairStrands(generateHairStrands());
 
-    const brainTimer = setTimeout(() => setShowBrain(true), 1200);
+    const brainTimer = setTimeout(() => setShowBrain(true), 3500);
     NODES.forEach((node, index) => {
       setTimeout(() => {
         setVisibleNodes((prev) => [...prev, node.id]);
-      }, 2500 + index * 400);
+      }, 5000 + index * 400);
     });
     return () => clearTimeout(brainTimer);
   }, []);
@@ -88,10 +88,8 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
     if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
       
-      // Trigger exploration state in parent immediately
       onExplore?.();
 
-      // Faster cinematic transition to the gallery
       setTimeout(() => {
         const gallery = document.getElementById('gallery-section');
         if (gallery) {
@@ -187,8 +185,8 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: [0, 0.8, 0.3] }}
                     transition={{ 
-                      duration: 2.5, 
-                      ease: [0.4, 0, 0.2, 1], 
+                      duration: 4.5, 
+                      ease: "easeInOut", 
                       delay: idx * 0.1 
                     }}
                   />
@@ -458,7 +456,6 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                 animate={{ letterSpacing: "1.5em", opacity: 1 }}
                 transition={{ duration: 4 }}
               >
-                <p className="text-[10px] uppercase text-white/10 mb-8 tracking-[2.5em]">Neural Initialization</p>
                 <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter italic uppercase leading-tight">
                   The Mind of a <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">

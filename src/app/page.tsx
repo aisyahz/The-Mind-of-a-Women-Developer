@@ -22,6 +22,18 @@ export default function Home() {
           <NeuralConstellation onExplore={() => setIsExplored(true)} />
         </div>
 
+        {/* Narrative Intro Line */}
+        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center px-6">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 4, delay: 5 }}
+            className="text-[9px] md:text-[10px] uppercase tracking-[1.2em] text-white/30 font-medium glow-sm whitespace-nowrap italic"
+          >
+            Before the code, there was curiosity.
+          </motion.p>
+        </div>
+
         {/* Cinematic Overlays */}
         <div className="absolute top-12 left-12 z-20 pointer-events-none">
           <div className="flex flex-col gap-1">
