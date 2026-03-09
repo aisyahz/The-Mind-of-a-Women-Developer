@@ -38,6 +38,12 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const springX = useSpring(mouseX, { damping: 50, stiffness: 80 });
   const springY = useSpring(mouseY, { damping: 50, stiffness: 80 });
 
+  // Move hooks before conditional return
+  const bgParallaxX = useTransform(springX, [0, 800], [50, -50]);
+  const bgParallaxY = useTransform(springY, [0, 1000], [50, -50]);
+  const midParallaxX = useTransform(springX, [0, 800], [15, -15]);
+  const midParallaxY = useTransform(springY, [0, 1000], [15, -15]);
+
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 800;
@@ -180,10 +186,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         </defs>
 
         <motion.g 
-          style={{ 
-            x: useTransform(springX, [0, 800], [50, -50]),
-            y: useTransform(springY, [0, 1000], [50, -50]),
-          }}
+          style={{ x: bgParallaxX, y: bgParallaxY }}
           opacity="0.1"
         >
           {backgroundConstellations.map((d, i) => (
@@ -192,10 +195,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         </motion.g>
 
         <motion.g 
-          style={{ 
-            x: useTransform(springX, [0, 800], [15, -15]),
-            y: useTransform(springY, [0, 1000], [15, -15]),
-          }}
+          style={{ x: midParallaxX, y: midParallaxY }}
         >
           <g opacity="0.25">
             {neuralThreads.map((d, i) => (
@@ -465,7 +465,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                           <text x={node.x} y={node.y + 140} textAnchor="middle" fill="white" className="text-[20px] md:text-[24px] uppercase tracking-[1em] font-black glow-sm pointer-events-none italic">
                             {isActive ? "UNFOLD LINEAGE" : "IGNITE"}
                           </text>
-                          {/* Refined Arrow */}
+                          {/* Refined Arrow - Double Chevron */}
                           <motion.path
                             d={`M ${node.x - 12} ${node.y + 165} L ${node.x} ${node.y + 177} L ${node.x + 12} ${node.y + 165} M ${node.x - 12} ${node.y + 175} L ${node.x} ${node.y + 187} L ${node.x + 12} ${node.y + 175}`}
                             fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" 
