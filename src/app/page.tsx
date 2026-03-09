@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -8,6 +9,7 @@ import { WomenInTechGallery } from '@/components/WomenInTechGallery';
 
 export default function Home() {
   const [isExplored, setIsExplored] = useState(false);
+  const [isStarHovered, setIsStarHovered] = useState(false);
 
   return (
     <main className={`relative min-h-screen w-full bg-[#050508] flex flex-col items-center ${!isExplored ? 'overflow-hidden h-screen' : 'overflow-x-hidden'}`}>
@@ -72,8 +74,8 @@ export default function Home() {
             </section>
 
             {/* Poetic Ending Section */}
-            <section className="relative w-full py-32 flex flex-col items-center justify-center z-20 bg-transparent">
-              <div className="text-center space-y-8 max-w-2xl px-6">
+            <section className="relative w-full py-48 flex flex-col items-center justify-center z-20 bg-transparent overflow-hidden">
+              <div className="text-center space-y-12 max-w-2xl px-6 relative">
                 <div className="flex justify-center gap-4 mb-8">
                   {[0, 1, 2].map((i) => (
                     <div 
@@ -95,23 +97,74 @@ export default function Home() {
                   Every line of code <br className="md:hidden" /> writes the future.
                 </p>
 
-                <div className="pt-16 opacity-10">
-                  <div className="w-px h-24 bg-gradient-to-b from-white to-transparent mx-auto" />
+                {/* The Interactive Next Star */}
+                <div className="pt-32 relative flex flex-col items-center">
+                   <motion.div
+                    onMouseEnter={() => setIsStarHovered(true)}
+                    onMouseLeave={() => setIsStarHovered(false)}
+                    className="relative cursor-none group"
+                    initial={{ scale: 0, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5, duration: 2 }}
+                   >
+                     {/* Pulsing Core */}
+                     <motion.div
+                       animate={{ 
+                         scale: [1, 1.4, 1],
+                         opacity: [0.4, 0.9, 0.4],
+                         boxShadow: [
+                           "0 0 10px rgba(139, 92, 246, 0.2)",
+                           "0 0 30px rgba(139, 92, 246, 0.6)",
+                           "0 0 10px rgba(139, 92, 246, 0.2)"
+                         ]
+                       }}
+                       transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                       className="w-2.5 h-2.5 bg-white rounded-full relative z-10"
+                     />
+                     
+                     {/* External Glow Ring */}
+                     <motion.div
+                        animate={{ scale: [1, 2.5, 1], opacity: [0.15, 0, 0.15] }}
+                        transition={{ duration: 4, repeat: Infinity }}
+                        className="absolute inset-0 -m-2 rounded-full border border-white/20"
+                     />
+
+                     {/* Tooltip Message */}
+                     <AnimatePresence>
+                       {isStarHovered && (
+                         <motion.div
+                           initial={{ opacity: 0, y: 15, filter: 'blur(10px)' }}
+                           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                           exit={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+                           className="absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap"
+                         >
+                           <p className="text-[10px] uppercase tracking-[0.6em] text-white/50 font-bold italic transition-colors duration-500 group-hover:text-white/90">
+                             Maybe the next star is you.
+                           </p>
+                         </motion.div>
+                       )}
+                     </AnimatePresence>
+                   </motion.div>
+                </div>
+
+                <div className="pt-24 opacity-5">
+                  <div className="w-px h-32 bg-gradient-to-b from-white to-transparent mx-auto" />
                 </div>
               </div>
 
               {/* Decorative nodes for the background */}
               <div className="absolute inset-0 pointer-events-none -z-10">
-                {[...Array(12)].map((_, i) => (
+                {[...Array(20)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-1 bg-white rounded-full opacity-0 animate-pulse"
+                    className="absolute w-[1px] h-[1px] bg-white rounded-full opacity-0 animate-pulse"
                     style={{
                       top: `${Math.random() * 100}%`,
                       left: `${Math.random() * 100}%`,
                       animationDelay: `${Math.random() * 5}s`,
-                      animationDuration: `${3 + Math.random() * 4}s`,
-                      opacity: 0.05 + Math.random() * 0.1
+                      animationDuration: `${4 + Math.random() * 6}s`,
+                      opacity: 0.03 + Math.random() * 0.07
                     }}
                   />
                 ))}
@@ -123,3 +176,4 @@ export default function Home() {
     </main>
   );
 }
+
