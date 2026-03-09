@@ -12,7 +12,7 @@ const WOMEN_FIGURES = [
     caption: "The first computer programmer.",
     color: "#a855f7", // Creativity (Violet)
     nodeSource: "Creativity",
-    startX: 400, // Matching Curiosity/Center
+    startX: 400,
   },
   {
     name: "Grace Hopper",
@@ -44,7 +44,7 @@ export const WomenInTechGallery: React.FC = () => {
   return (
     <div id="gallery-section" className="relative py-64 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
-      {/* Constellation Bridge Lines: Staged Growth */}
+      {/* Constellation Bridge Lines: Staged Growth - Slower (5s) */}
       <div className="absolute top-0 left-0 w-full h-[800px] pointer-events-none overflow-visible">
         <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
           {WOMEN_FIGURES.map((woman, idx) => {
@@ -61,8 +61,8 @@ export const WomenInTechGallery: React.FC = () => {
                 whileInView={{ pathLength: 1, opacity: 0.2 }}
                 viewport={{ once: true, margin: "0px 0px -200px 0px" }}
                 transition={{ 
-                  duration: 2.5, 
-                  delay: idx * 0.3, 
+                  duration: 5.0, // Increased duration for a slower, more epic feel
+                  delay: idx * 0.5, 
                   ease: [0.4, 0, 0.2, 1] 
                 }}
               />
@@ -95,22 +95,22 @@ export const WomenInTechGallery: React.FC = () => {
         {WOMEN_FIGURES.map((woman, idx) => (
           <div key={woman.name} className="relative flex flex-col items-center">
             
-            {/* Stage 1: Star Particle Gathering */}
+            {/* Stage 1: Star Particle Gathering - Slower (2.5s) */}
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               whileInView={{ scale: [0, 1.5, 1], opacity: [0, 1, 0.4] }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1.2, delay: 1.5 + idx * 0.2, ease: "easeOut" }}
+              transition={{ duration: 2.5, delay: 2.5 + idx * 0.4, ease: "easeOut" }}
               className="absolute top-20 w-4 h-4 rounded-full blur-xl"
               style={{ backgroundColor: woman.color }}
             />
 
-            {/* Stage 2: Portrait Materialization */}
+            {/* Stage 2: Portrait Materialization - Slower (3.5s) */}
             <motion.div
               initial={{ opacity: 0, filter: 'blur(30px)', scale: 0.85, y: 40 }}
               whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1.8, delay: 2.2 + idx * 0.2, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 3.5, delay: 3.5 + idx * 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="group relative flex flex-col items-center w-full"
             >
               <div className="relative w-full flex flex-col items-center">
@@ -129,12 +129,12 @@ export const WomenInTechGallery: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
                 </motion.div>
 
-                {/* Stage 3: Pedestal and Typography Reveal */}
+                {/* Stage 3: Pedestal and Typography Reveal - Slower (1.8s) */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1, delay: 3.2 + idx * 0.2 }}
+                  transition={{ duration: 1.8, delay: 5.5 + idx * 0.4 }}
                   className="relative w-full max-w-[240px] pt-20 pb-12 px-8 flex flex-col items-center justify-center overflow-hidden"
                   style={{
                     clipPath: 'polygon(15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%)',
@@ -181,7 +181,7 @@ export const WomenInTechGallery: React.FC = () => {
         ))}
       </div>
 
-      {/* Footer Line: Final Closure */}
+      {/* Footer Line */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

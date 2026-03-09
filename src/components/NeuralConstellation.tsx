@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NODES, NodeData } from '@/lib/constants';
 
-// Refined, more statuesque silhouette profile
 const SILHOUETTE_PATH = "M 350,750 C 300,720 240,650 240,450 C 240,250 350,180 480,220 C 580,250 630,350 610,480 C 630,510 610,560 550,600 C 520,700 450,750 350,730";
 
 const generateNeuralThreads = () => {
@@ -83,17 +82,17 @@ export const NeuralConstellation: React.FC = () => {
   }, []);
 
   const handleNodeClick = (node: NodeData) => {
-    if (node.id === 'curiosity') {
+    if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
-      // Wait for the light pulses to "travel" before scrolling
+      // Wait for the light pulses to "travel" before scrolling - Much slower delay (1.5s)
       setTimeout(() => {
         const gallery = document.getElementById('gallery-section');
         if (gallery) {
           gallery.scrollIntoView({ behavior: 'smooth' });
         }
-        // Keep the lines visible long enough to feel connected
-        setTimeout(() => setIsExpanding(false), 3500);
-      }, 600);
+        // Keep the lines visible long enough to feel connected - Reset after 6s
+        setTimeout(() => setIsExpanding(false), 6000);
+      }, 1500);
     }
   };
 
@@ -168,11 +167,10 @@ export const NeuralConstellation: React.FC = () => {
             ))}
           </g>
 
-          {/* Temporal Expansion Pulse (on Curiosity Click) */}
+          {/* Temporal Expansion Pulse (on Curiosity Click) - Slower growth (4s) */}
           <AnimatePresence>
             {isExpanding && (
               <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                {/* Four specific lines targeting the gallery figures */}
                 {[0, 1, 2, 3].map((idx) => (
                   <motion.path
                     key={`expansion-line-${idx}`}
@@ -182,7 +180,11 @@ export const NeuralConstellation: React.FC = () => {
                     strokeWidth="2"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: [0, 1, 0.4] }}
-                    transition={{ duration: 2, ease: [0.4, 0, 0.2, 1], delay: idx * 0.1 }}
+                    transition={{ 
+                      duration: 4.5, 
+                      ease: [0.4, 0, 0.2, 1], 
+                      delay: idx * 0.15 
+                    }}
                   />
                 ))}
               </motion.g>
@@ -382,23 +384,23 @@ export const NeuralConstellation: React.FC = () => {
         </motion.g>
       </svg>
 
-      {/* Insight Shard */}
+      {/* Insight Shard - Reduced height for better composition */}
       <AnimatePresence>
         {activeNode && (
           <motion.div
             initial={{ opacity: 0, y: 40, filter: 'blur(15px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: 30, filter: 'blur(15px)' }}
-            className="absolute bottom-16 left-1/2 -translate-x-1/2 max-w-xs w-[80%] glass-morphism p-6 rounded-[2rem] z-50 text-center border-white/5 shadow-2xl"
+            className="absolute bottom-12 left-1/2 -translate-x-1/2 max-w-[280px] w-[80%] glass-morphism p-5 rounded-[1.5rem] z-50 text-center border-white/5 shadow-2xl"
           >
             <h3 
-              className="text-2xl font-bold mb-3 tracking-wider uppercase italic"
+              className="text-xl font-bold mb-2 tracking-wider uppercase italic"
               style={{ color: activeNode.color }}
             >
               {activeNode.label}
             </h3>
 
-            <p className="text-[12px] text-white/60 leading-relaxed font-light italic">
+            <p className="text-[11px] text-white/60 leading-relaxed font-light italic">
               "{activeNode.insight}"
             </p>
           </motion.div>
