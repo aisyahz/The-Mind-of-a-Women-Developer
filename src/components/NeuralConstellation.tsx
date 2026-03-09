@@ -100,8 +100,8 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
           }
           // Reset expansion state after a long duration
           setTimeout(() => setIsExpanding(false), 5000);
-        }, 800);
-      }, 1200);
+        }, 1200);
+      }, 1500);
     }
   };
 
