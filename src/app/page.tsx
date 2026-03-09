@@ -76,29 +76,53 @@ export default function Home() {
             {/* Poetic Ending Section */}
             <section className="relative w-full py-48 flex flex-col items-center justify-center z-20 bg-transparent overflow-hidden">
               <div className="text-center space-y-12 max-w-2xl px-6 relative">
-                <div className="flex justify-center gap-4 mb-8">
+                
+                {/* Visual Echo: Forming Nodes */}
+                <div className="flex justify-center gap-6 mb-16">
                   {[0, 1, 2].map((i) => (
-                    <div 
+                    <motion.div 
                       key={i} 
-                      className="w-1 h-1 rounded-full bg-white/40 animate-pulse" 
-                      style={{ animationDelay: `${i * 0.8}s` }}
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileInView={{ opacity: [0, 0.4, 0.2], scale: [0, 1.2, 1] }}
+                      transition={{ delay: i * 0.3, duration: 2 }}
+                      className="w-1.5 h-1.5 rounded-full bg-primary/40 blur-[1px]" 
                     />
                   ))}
                 </div>
                 
-                <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tighter uppercase italic">
-                  The Constellation <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400">
-                    Continues
-                  </span>
-                </h2>
+                <motion.div
+                  initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
+                  whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                >
+                  <h2 className="text-4xl md:text-7xl font-bold text-white tracking-tighter uppercase italic leading-none">
+                    The Constellation <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-rose-400">
+                      Continues
+                    </span>
+                  </h2>
+                </motion.div>
                 
-                <p className="text-xs uppercase tracking-[1.5em] text-white/20 font-medium leading-loose pt-4">
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 1, duration: 2 }}
+                  className="text-[10px] md:text-xs uppercase tracking-[1.5em] text-white/30 font-medium leading-loose pt-8"
+                >
                   Every line of code <br className="md:hidden" /> writes the future.
-                </p>
+                </motion.p>
 
-                {/* The Interactive Next Star */}
-                <div className="pt-32 relative flex flex-col items-center">
+                {/* The Interactive Next Star: Inspirational Climax */}
+                <div className="pt-48 relative flex flex-col items-center">
+                   
+                   {/* Connection Path: Leading to the user */}
+                   <motion.div 
+                     initial={{ height: 0 }}
+                     whileInView={{ height: 160 }}
+                     transition={{ duration: 3, ease: "easeInOut" }}
+                     className="absolute -top-12 left-1/2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-primary/0 via-primary/20 to-transparent"
+                   />
+
                    <motion.div
                     onMouseEnter={() => setIsStarHovered(true)}
                     onMouseLeave={() => setIsStarHovered(false)}
@@ -111,64 +135,78 @@ export default function Home() {
                      {/* Pulsing Core */}
                      <motion.div
                        animate={{ 
-                         scale: [1, 1.4, 1],
-                         opacity: [0.4, 0.9, 0.4],
+                         scale: [1, 1.5, 1],
+                         opacity: [0.6, 1, 0.6],
                          boxShadow: [
-                           "0 0 10px rgba(139, 92, 246, 0.2)",
-                           "0 0 30px rgba(139, 92, 246, 0.6)",
-                           "0 0 10px rgba(139, 92, 246, 0.2)"
+                           "0 0 15px rgba(255, 255, 255, 0.3)",
+                           "0 0 40px rgba(139, 92, 246, 0.7)",
+                           "0 0 15px rgba(255, 255, 255, 0.3)"
                          ]
                        }}
-                       transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                       className="w-2.5 h-2.5 bg-white rounded-full relative z-10"
+                       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                       className="w-3 h-3 bg-white rounded-full relative z-10"
                      />
                      
-                     {/* External Glow Ring */}
+                     {/* External Atmospheric Rings */}
                      <motion.div
-                        animate={{ scale: [1, 2.5, 1], opacity: [0.15, 0, 0.15] }}
-                        transition={{ duration: 4, repeat: Infinity }}
-                        className="absolute inset-0 -m-2 rounded-full border border-white/20"
+                        animate={{ scale: [1, 3, 1], opacity: [0.2, 0, 0.2] }}
+                        transition={{ duration: 5, repeat: Infinity }}
+                        className="absolute inset-0 -m-3 rounded-full border border-white/10"
+                     />
+                     <motion.div
+                        animate={{ scale: [1, 2, 1], opacity: [0.1, 0, 0.1] }}
+                        transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                        className="absolute inset-0 -m-1 rounded-full border border-primary/20"
                      />
 
-                     {/* Tooltip Message */}
+                     {/* Tooltip Message: The Reveal */}
                      <AnimatePresence>
                        {isStarHovered && (
                          <motion.div
-                           initial={{ opacity: 0, y: 15, filter: 'blur(10px)' }}
-                           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                           exit={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
-                           className="absolute top-12 left-1/2 -translate-x-1/2 whitespace-nowrap"
+                           initial={{ opacity: 0, y: 20, filter: 'blur(10px)', scale: 0.95 }}
+                           animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+                           exit={{ opacity: 0, y: 15, filter: 'blur(10px)' }}
+                           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                           className="absolute top-16 left-1/2 -translate-x-1/2 whitespace-nowrap"
                          >
-                           <p className="text-[10px] uppercase tracking-[0.6em] text-white/50 font-bold italic transition-colors duration-500 group-hover:text-white/90">
+                           <p className="text-[11px] uppercase tracking-[0.8em] text-white/70 font-bold italic transition-colors duration-700 group-hover:text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                              Maybe the next star is you.
                            </p>
+                           <motion.div 
+                             initial={{ width: 0 }}
+                             animate={{ width: "100%" }}
+                             className="h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-2 mx-auto"
+                           />
                          </motion.div>
                        )}
                      </AnimatePresence>
                    </motion.div>
                 </div>
 
-                <div className="pt-24 opacity-5">
-                  <div className="w-px h-32 bg-gradient-to-b from-white to-transparent mx-auto" />
+                {/* Ambient Decorative Nodes: Creating the feeling of a new constellation */}
+                <div className="absolute inset-0 pointer-events-none -z-10">
+                  {[...Array(30)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: [0, 0.05, 0] }}
+                      transition={{ 
+                        duration: 4 + Math.random() * 4, 
+                        repeat: Infinity, 
+                        delay: Math.random() * 10 
+                      }}
+                      className="absolute w-[1px] h-[1px] bg-white rounded-full"
+                      style={{
+                        top: `${Math.random() * 100}%`,
+                        left: `${Math.random() * 100}%`,
+                      }}
+                    />
+                  ))}
                 </div>
               </div>
 
-              {/* Decorative nodes for the background */}
-              <div className="absolute inset-0 pointer-events-none -z-10">
-                {[...Array(20)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-[1px] h-[1px] bg-white rounded-full opacity-0 animate-pulse"
-                    style={{
-                      top: `${Math.random() * 100}%`,
-                      left: `${Math.random() * 100}%`,
-                      animationDelay: `${Math.random() * 5}s`,
-                      animationDuration: `${4 + Math.random() * 6}s`,
-                      opacity: 0.03 + Math.random() * 0.07
-                    }}
-                  />
-                ))}
-              </div>
+              {/* Bottom Horizon Gradient */}
+              <div className="absolute bottom-0 left-0 w-full h-96 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none" />
             </section>
           </motion.div>
         )}
