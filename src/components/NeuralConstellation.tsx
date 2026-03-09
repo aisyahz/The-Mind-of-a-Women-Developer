@@ -20,6 +20,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const [neuralThreads, setNeuralThreads] = useState<string[]>([]);
   const [backgroundConstellations, setBackgroundConstellations] = useState<string[]>([]);
   const [coreConnections, setCoreConnections] = useState<{id: string, path: string, color: string}[]>([]);
+  const [bridgePaths, setBridgePaths] = useState<string[]>([]);
   const [discoveredNodeId, setDiscoveredNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [clickBurst, setClickBurst] = useState<string | null>(null);
@@ -72,6 +73,16 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         color: node.color
       }));
       setCoreConnections(conns);
+
+      // Expansion bridge paths
+      const bridgeLines = Array.from({ length: 15 }).map((_, i) => {
+        const endX = 420 + (Math.random() - 0.5) * 1200;
+        const endY = 1200;
+        const cp1x = 420 + (Math.random() - 0.5) * 400;
+        const cp1y = 700 + (Math.random() * 200);
+        return `M 420,420 C ${cp1x},${cp1y} ${cp1x},${cp1y} ${endX},${endY}`;
+      });
+      setBridgePaths(bridgeLines);
     }
 
     const brainTimer = setTimeout(() => setShowBrain(true), 1500);
@@ -126,10 +137,10 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         className="relative z-10 w-full h-full max-h-screen overflow-visible select-none"
         preserveAspectRatio="xMidYMid meet"
         animate={{ 
-          scale: [1, 1.02, 1],
-          rotate: [0, 0.2, 0],
+          scale: isExpanding ? 1.05 : [1, 1.02, 1],
+          rotate: isExpanding ? 0 : [0, 0.2, 0],
         }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 25, repeat: isExpanding ? 0 : Infinity, ease: "easeInOut" }}
       >
         <defs>
           {NODES.map((node) => (
@@ -219,6 +230,28 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             ))}
           </g>
 
+          {/* Temporal Bridge Expansion */}
+          <AnimatePresence>
+            {isExpanding && (
+              <g>
+                {bridgePaths.map((d, i) => (
+                  <motion.path
+                    key={`bridge-${i}`}
+                    d={d}
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    strokeOpacity="0.6"
+                    initial={{ pathLength: 0, filter: 'blur(5px)' }}
+                    animate={{ pathLength: 1, filter: 'blur(0px)' }}
+                    transition={{ duration: 3, ease: "easeInOut", delay: i * 0.05 }}
+                    className="glow-sm"
+                  />
+                ))}
+              </g>
+            )}
+          </AnimatePresence>
+
           {/* Central Silhouette Aura */}
           <motion.path 
             d={SILHOUETTE_PATH} 
@@ -239,11 +272,11 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                 <motion.circle
                   cx="420" cy="420" r="20" fill="white"
                   animate={{ 
-                    scale: [1, 2.5, 1], 
-                    opacity: [0.4, 1, 0.4], 
-                    filter: ['blur(15px)', 'blur(35px)', 'blur(15px)'] 
+                    scale: isExpanding ? [1, 4, 2] : [1, 2.5, 1], 
+                    opacity: isExpanding ? 1 : [0.4, 1, 0.4], 
+                    filter: isExpanding ? 'blur(30px)' : ['blur(15px)', 'blur(35px)', 'blur(15px)'] 
                   }}
-                  transition={{ duration: 10, repeat: Infinity }}
+                  transition={{ duration: isExpanding ? 2 : 10, repeat: isExpanding ? 0 : Infinity }}
                 />
                 
                 {/* Sonar Awakening Waves */}
@@ -255,12 +288,12 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                     stroke="#f59e0b"
                     strokeWidth="1.5"
                     animate={{
-                      r: [20, 900],
-                      opacity: [0.6, 0],
+                      r: isExpanding ? [20, 1500] : [20, 900],
+                      opacity: isExpanding ? [0.8, 0] : [0.6, 0],
                     }}
                     transition={{
-                      duration: 6,
-                      repeat: Infinity,
+                      duration: isExpanding ? 3 : 6,
+                      repeat: isExpanding ? 2 : Infinity,
                       delay: i * 1.5,
                       ease: "easeOut"
                     }}
@@ -270,7 +303,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             )}
           </AnimatePresence>
 
-          {/* FACET NODES (Interactive Game-like Controls) */}
+          {/* FACET NODES */}
           {NODES.map((node) => {
             const isVisible = visibleNodes.includes(node.id);
             const isHovered = hoveredNodeId === node.id;
