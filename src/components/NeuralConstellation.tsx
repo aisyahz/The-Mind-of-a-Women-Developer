@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NODES, NodeData } from '@/lib/constants';
 
@@ -11,7 +10,6 @@ const SILHOUETTE_PATH = "M 320,680 C 250,650 200,550 220,400 C 240,250 350,150 4
 // Helper to generate organic neural threads that fill the silhouette
 const generateNeuralThreads = () => {
   return Array.from({ length: 22 }).map(() => {
-    // Generate random points roughly within the head area
     const startX = 420 + (Math.random() - 0.5) * 150;
     const startY = 400 + (Math.random() - 0.5) * 150;
     const endX = 420 + (Math.random() - 0.5) * 400;
@@ -28,13 +26,38 @@ const generateNeuralThreads = () => {
 
 // Helper for data streams entering from the bottom (neck area)
 const generateIncomingStreams = () => {
-  return Array.from({ length: 8 }).map((_, i) => ({
-    x: 350 + (Math.random() * 100), // Coming up into the neck area
+  return Array.from({ length: 12 }).map((_, i) => ({
+    x: 350 + (Math.random() * 100), 
     y: 800,
-    targetX: 420 + (Math.random() - 0.5) * 100,
-    targetY: 550 + (Math.random() - 0.5) * 50,
-    delay: i * 0.6,
+    targetX: 400 + (Math.random() - 0.5) * 120,
+    targetY: 550 + (Math.random() - 0.5) * 100,
+    delay: i * 0.4,
+    duration: 4 + Math.random() * 3,
   }));
+};
+
+// Helper to generate flowing "hair" strands of light
+const generateHairStrands = () => {
+  return Array.from({ length: 35 }).map((_, i) => {
+    // Start along the top and back curve of the head
+    const t = Math.random();
+    const startX = 220 + t * 200; // Across the top/back
+    const startY = 400 - (1 - Math.pow(t - 0.5, 2) * 4) * 150; // Curved top
+    
+    const endX = startX - 50 + (Math.random() * 100);
+    const endY = 900 + (Math.random() * 200);
+    
+    const cp1x = startX - 20 - (Math.random() * 100);
+    const cp1y = startY + 200 + (Math.random() * 100);
+    const cp2x = endX + (Math.random() * 50);
+    const cp2y = endY - 300;
+    
+    return {
+      path: `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`,
+      delay: Math.random() * 10,
+      opacity: 0.05 + Math.random() * 0.1,
+    };
+  });
 };
 
 export const NeuralConstellation: React.FC = () => {
@@ -43,12 +66,14 @@ export const NeuralConstellation: React.FC = () => {
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
   const [neuralThreads, setNeuralThreads] = useState<string[]>([]);
   const [incomingStreams, setIncomingStreams] = useState<any[]>([]);
+  const [hairStrands, setHairStrands] = useState<any[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   
   useEffect(() => {
     setIsMounted(true);
     setNeuralThreads(generateNeuralThreads());
     setIncomingStreams(generateIncomingStreams());
+    setHairStrands(generateHairStrands());
 
     const brainTimer = setTimeout(() => setShowBrain(true), 1200);
     NODES.forEach((node, index) => {
@@ -59,16 +84,12 @@ export const NeuralConstellation: React.FC = () => {
     return () => clearTimeout(brainTimer);
   }, []);
 
-  if (!isMounted) {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent" />
-    );
-  }
+  if (!isMounted) return null;
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
       <svg
-        viewBox="0 0 800 800"
+        viewBox="0 0 800 1000"
         className="relative z-10 w-full max-w-6xl h-auto overflow-visible select-none"
       >
         <defs>
@@ -79,14 +100,20 @@ export const NeuralConstellation: React.FC = () => {
             </filter>
           ))}
           
-          <linearGradient id="thread-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.05" />
-            <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="#ec4899" stopOpacity="0.05" />
+          <linearGradient id="thread-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.1" />
+            <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#ec4899" stopOpacity="0.1" />
+          </linearGradient>
+
+          <linearGradient id="hair-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.4" />
+            <stop offset="60%" stopColor="#ec4899" stopOpacity="0.1" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
           </linearGradient>
 
           <radialGradient id="core-grad">
-            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.5" />
+            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.6" />
             <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
           </radialGradient>
 
@@ -101,21 +128,20 @@ export const NeuralConstellation: React.FC = () => {
           </filter>
         </defs>
 
-        {/* Global Breathing & Parallax Motion */}
         <motion.g
           animate={{
-            y: [0, -12, 0],
-            scale: [1, 1.01, 1]
+            y: [0, -15, 0],
+            scale: [1, 1.015, 1]
           }}
           transition={{
-            duration: 10,
+            duration: 12,
             repeat: Infinity,
             ease: "easeInOut"
           }}
         >
           {/* Orbital Intelligent Rings */}
           <g className="opacity-10">
-            {[280, 360, 440].map((radius, i) => (
+            {[300, 380, 460].map((radius, i) => (
               <motion.circle
                 key={`orbit-ring-${i}`}
                 cx="420"
@@ -124,26 +150,60 @@ export const NeuralConstellation: React.FC = () => {
                 fill="none"
                 stroke="white"
                 strokeWidth="0.5"
-                strokeDasharray="2 20"
+                strokeDasharray="4 24"
                 animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                transition={{ duration: 40 + i * 15, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 60 + i * 20, repeat: Infinity, ease: "linear" }}
               />
             ))}
           </g>
 
-          {/* Incoming Neural Streams from Below */}
+          {/* Flowing Neural Hair Strands (Downwards) */}
+          <g filter="url(#master-bloom)">
+            {hairStrands.map((strand, i) => (
+              <g key={`hair-${i}`}>
+                <motion.path
+                  d={strand.path}
+                  fill="none"
+                  stroke="url(#hair-grad)"
+                  strokeWidth="0.8"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: strand.opacity }}
+                  transition={{ duration: 8, delay: strand.delay, ease: "easeInOut" }}
+                />
+                {/* Traveling Data Sparkles in Hair */}
+                <motion.circle
+                  r="1.2"
+                  fill="white"
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    offsetDistance: ["0%", "100%"],
+                    opacity: [0, 0.8, 0]
+                  }}
+                  transition={{
+                    duration: 6 + Math.random() * 8,
+                    repeat: Infinity,
+                    delay: strand.delay + Math.random() * 5,
+                    ease: "linear"
+                  }}
+                  style={{ offsetPath: `path("${strand.path}")` }}
+                />
+              </g>
+            ))}
+          </g>
+
+          {/* Incoming Neural Streams from Below (Neck) */}
           <g>
             {incomingStreams.map((stream, i) => (
               <motion.path
                 key={`stream-${i}`}
-                d={`M ${stream.x},${stream.y} Q ${stream.x},${(stream.y + stream.targetY) / 1.5} ${stream.targetX},${stream.targetY}`}
+                d={`M ${stream.x},${stream.y} Q ${stream.x},${(stream.y + stream.targetY) / 1.6} ${stream.targetX},${stream.targetY}`}
                 fill="none"
                 stroke="url(#thread-grad)"
-                strokeWidth="1"
+                strokeWidth="1.2"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: [0, 0.3, 0] }}
+                animate={{ pathLength: 1, opacity: [0, 0.4, 0] }}
                 transition={{
-                  duration: 5,
+                  duration: stream.duration,
                   delay: stream.delay,
                   repeat: Infinity,
                   ease: "easeInOut"
@@ -157,11 +217,11 @@ export const NeuralConstellation: React.FC = () => {
             d={SILHOUETTE_PATH}
             fill="none"
             stroke="white"
-            strokeWidth="0.5"
-            strokeOpacity="0.05"
+            strokeWidth="0.6"
+            strokeOpacity="0.08"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 3 }}
+            transition={{ duration: 4 }}
           />
 
           {/* Central Energy Core */}
@@ -170,20 +230,20 @@ export const NeuralConstellation: React.FC = () => {
               <motion.g
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 2.5 }}
+                transition={{ duration: 3 }}
               >
-                <circle cx="420" cy="400" r="100" fill="url(#core-grad)" />
+                <circle cx="420" cy="400" r="120" fill="url(#core-grad)" />
                 <motion.circle
                   cx="420"
                   cy="400"
-                  r="8"
+                  r="10"
                   fill="white"
                   animate={{
-                    scale: [1, 1.8, 1],
-                    opacity: [0.3, 0.9, 0.3],
-                    filter: ['blur(6px)', 'blur(16px)', 'blur(6px)']
+                    scale: [1, 2.2, 1],
+                    opacity: [0.4, 1, 0.4],
+                    filter: ['blur(8px)', 'blur(20px)', 'blur(8px)']
                   }}
-                  transition={{ duration: 5, repeat: Infinity }}
+                  transition={{ duration: 6, repeat: Infinity }}
                 />
               </motion.g>
             )}
@@ -194,7 +254,7 @@ export const NeuralConstellation: React.FC = () => {
               <motion.g 
                 initial={{ opacity: 0 }} 
                 animate={{ opacity: 1 }} 
-                transition={{ duration: 4 }}
+                transition={{ duration: 5 }}
                 filter="url(#master-bloom)"
               >
                 {/* Organic Neural Threads */}
@@ -204,14 +264,13 @@ export const NeuralConstellation: React.FC = () => {
                       d={path}
                       fill="none"
                       stroke="url(#thread-grad)"
-                      strokeWidth="0.6"
+                      strokeWidth="0.8"
                       initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: 0.3 }}
-                      transition={{ duration: 6, delay: i * 0.05, ease: "easeInOut" }}
+                      animate={{ pathLength: 1, opacity: 0.35 }}
+                      transition={{ duration: 7, delay: i * 0.08, ease: "easeInOut" }}
                     />
-                    {/* Travelling Sparkles */}
                     <motion.circle
-                      r="1.5"
+                      r="1.8"
                       fill="white"
                       initial={{ opacity: 0 }}
                       animate={{ 
@@ -219,9 +278,9 @@ export const NeuralConstellation: React.FC = () => {
                         opacity: [0, 1, 0]
                       }}
                       transition={{
-                        duration: 4 + Math.random() * 5,
+                        duration: 5 + Math.random() * 6,
                         repeat: Infinity,
-                        delay: Math.random() * 12,
+                        delay: Math.random() * 15,
                         ease: "easeInOut"
                       }}
                       style={{ offsetPath: `path("${path}")` }}
@@ -238,11 +297,11 @@ export const NeuralConstellation: React.FC = () => {
                       y1={node.y}
                       x2={target.x}
                       y2={target.y}
-                      stroke={activeNode?.id === node.id || activeNode?.id === target.id ? target.color : "rgba(255,255,255,0.02)"}
-                      strokeWidth={activeNode?.id === node.id || activeNode?.id === target.id ? "1.2" : "0.4"}
+                      stroke={activeNode?.id === node.id || activeNode?.id === target.id ? target.color : "rgba(255,255,255,0.03)"}
+                      strokeWidth={activeNode?.id === node.id || activeNode?.id === target.id ? "1.5" : "0.5"}
                       initial={{ pathLength: 0 }}
                       animate={{ pathLength: 1 }}
-                      transition={{ duration: 5, delay: 2 }}
+                      transition={{ duration: 6, delay: 2.5 }}
                     />
                   ))
                 )}
@@ -265,35 +324,33 @@ export const NeuralConstellation: React.FC = () => {
                 <AnimatePresence>
                   {isVisible && (
                     <>
-                      {/* Orbiting Faculty Particles */}
                       {isActive && (
                         <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                           {[0, 120, 240].map((angle, idx) => (
                             <motion.circle
                               key={`orbit-${idx}`}
-                              r="2"
+                              r="2.5"
                               fill={node.color}
                               animate={{
                                 cx: [
-                                  node.x + Math.cos((angle * Math.PI) / 180) * 40,
-                                  node.x + Math.cos(((angle + 360) * Math.PI) / 180) * 40,
+                                  node.x + Math.cos((angle * Math.PI) / 180) * 45,
+                                  node.x + Math.cos(((angle + 360) * Math.PI) / 180) * 45,
                                 ],
                                 cy: [
-                                  node.y + Math.sin((angle * Math.PI) / 180) * 40,
-                                  node.y + Math.sin(((angle + 360) * Math.PI) / 180) * 40,
+                                  node.y + Math.sin((angle * Math.PI) / 180) * 45,
+                                  node.y + Math.sin(((angle + 360) * Math.PI) / 180) * 45,
                                 ],
                               }}
-                              transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                              transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
                             />
                           ))}
                         </motion.g>
                       )}
 
-                      {/* Luminous Cognitive Anchor */}
                       <motion.circle
                         cx={node.x}
                         cy={node.y}
-                        r={isActive ? 18 : 6}
+                        r={isActive ? 20 : 7}
                         fill={node.color}
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
@@ -302,29 +359,27 @@ export const NeuralConstellation: React.FC = () => {
                         className="transition-all duration-1000"
                       />
 
-                      {/* Expansion Halo */}
                       <motion.circle
                         cx={node.x}
                         cy={node.y}
-                        r={isActive ? 50 : 25}
+                        r={isActive ? 55 : 30}
                         stroke={node.color}
-                        strokeWidth="0.5"
+                        strokeWidth="0.6"
                         fill="none"
-                        animate={{ scale: [1, 1.2, 1], opacity: [0.03, 0.15, 0.03] }}
-                        transition={{ duration: 6, repeat: Infinity }}
+                        animate={{ scale: [1, 1.25, 1], opacity: [0.04, 0.18, 0.04] }}
+                        transition={{ duration: 7, repeat: Infinity }}
                       />
 
-                      {/* Elegant Art Label */}
                       <motion.text
                         x={node.x}
-                        y={node.y + (node.y > 400 ? 65 : -55)}
+                        y={node.y + (node.y > 400 ? 70 : -60)}
                         textAnchor="middle"
                         fill={isActive ? node.color : "rgba(255,255,255,0.3)"}
-                        fontSize="8"
+                        fontSize="9"
                         fontWeight="500"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="font-body tracking-[0.6em] uppercase pointer-events-none transition-all duration-700"
+                        className="font-body tracking-[0.7em] uppercase pointer-events-none transition-all duration-700"
                       >
                         {node.label}
                       </motion.text>
@@ -337,73 +392,71 @@ export const NeuralConstellation: React.FC = () => {
         </motion.g>
       </svg>
 
-      {/* Premium Glassmorphism Insight Panel */}
       <AnimatePresence>
         {activeNode && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 50, filter: 'blur(20px)' }}
             animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, scale: 0.95, y: 40, filter: 'blur(20px)' }}
-            className="absolute bottom-16 left-1/2 -translate-x-1/2 max-w-lg w-[90%] glass-morphism p-12 rounded-[3rem] z-50 text-center border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+            className="absolute bottom-16 left-1/2 -translate-x-1/2 max-w-lg w-[90%] glass-morphism p-12 rounded-[3.5rem] z-50 text-center border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.8)]"
           >
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: "100%" }}
-              className="h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mb-10"
+              className="h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mb-10"
             />
             
-            <div className="mb-8 inline-block px-6 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl">
-              <span className="text-[10px] uppercase tracking-[0.5em] text-white/50 font-medium">Identity Facet Decoded</span>
+            <div className="mb-8 inline-block px-7 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl">
+              <span className="text-[10px] uppercase tracking-[0.6em] text-white/60 font-medium">Cognitive Facet Resolved</span>
             </div>
 
             <h3 
-              className="text-5xl font-bold mb-8 tracking-tight uppercase italic leading-none"
-              style={{ color: activeNode.color, textShadow: `0 0 40px ${activeNode.color}55` }}
+              className="text-5xl font-bold mb-8 tracking-tighter uppercase italic leading-none"
+              style={{ color: activeNode.color, textShadow: `0 0 50px ${activeNode.color}66` }}
             >
               {activeNode.label}
             </h3>
 
-            <p className="text-xl text-white/70 leading-relaxed font-light tracking-wide max-w-sm mx-auto italic">
+            <p className="text-xl text-white/80 leading-relaxed font-light tracking-wide max-w-md mx-auto italic">
               "{activeNode.insight}"
             </p>
 
-            <div className="mt-12 flex justify-center items-center gap-6 opacity-30">
-              <div className="w-20 h-[1px] bg-gradient-to-r from-transparent to-white" />
-              <div className="w-1.5 h-1.5 rounded-full border border-white" />
-              <div className="w-20 h-[1px] bg-gradient-to-l from-transparent to-white" />
+            <div className="mt-12 flex justify-center items-center gap-8 opacity-40">
+              <div className="w-24 h-[1px] bg-gradient-to-r from-transparent to-white" />
+              <div className="w-2 h-2 rounded-full border border-white rotate-45" />
+              <div className="w-24 h-[1px] bg-gradient-to-l from-transparent to-white" />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Immersive Intro Sequence */}
       <AnimatePresence>
         {!showBrain && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: 'blur(30px)' }}
-            transition={{ duration: 3 }}
+            exit={{ opacity: 0, filter: 'blur(40px)' }}
+            transition={{ duration: 3.5 }}
             className="absolute inset-0 flex items-center justify-center text-center z-50 bg-[#050508]"
           >
-            <div className="space-y-12">
+            <div className="space-y-16">
               <motion.div
-                initial={{ letterSpacing: "2em", opacity: 0, y: 30 }}
-                animate={{ letterSpacing: "0.6em", opacity: 1, y: 0 }}
-                transition={{ duration: 3, ease: "easeOut" }}
+                initial={{ letterSpacing: "2.5em", opacity: 0, y: 40 }}
+                animate={{ letterSpacing: "0.8em", opacity: 1, y: 0 }}
+                transition={{ duration: 3.5, ease: "easeOut" }}
               >
-                <p className="text-xs uppercase text-white/20 mb-6 tracking-[1.2em]">Initializing Portrait Core...</p>
-                <h1 className="text-6xl md:text-9xl font-headline font-bold text-white tracking-tighter leading-tight italic">
-                  COGNITIVE<br />
+                <p className="text-sm uppercase text-white/30 mb-8 tracking-[1.5em]">Syncing Neural Construct...</p>
+                <h1 className="text-7xl md:text-9xl font-headline font-bold text-white tracking-tighter leading-tight italic">
+                  PORTRAIT<br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-br from-blue-400 via-violet-400 to-pink-500">
-                    IDENTITY
+                    DIGITAL
                   </span>
                 </h1>
               </motion.div>
               <motion.div 
-                animate={{ width: ["0%", "120%", "0%"] }}
-                transition={{ duration: 5, repeat: Infinity }}
-                className="w-32 h-[1px] bg-white/20 mx-auto" 
+                animate={{ width: ["0%", "140%", "0%"] }}
+                transition={{ duration: 6, repeat: Infinity }}
+                className="w-40 h-[1px] bg-white/30 mx-auto" 
               />
             </div>
           </motion.div>
