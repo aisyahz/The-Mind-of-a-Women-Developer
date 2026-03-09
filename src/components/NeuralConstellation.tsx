@@ -13,15 +13,14 @@ interface NeuralConstellationProps {
 }
 
 export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExplore, externalHighlightId }) => {
-  const [activeNode, setActiveNode] = useState<NodeData | null>(null);
+  const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
   const [showBrain, setShowBrain] = useState(false);
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
   const [isExpanding, setIsExpanding] = useState(false);
   const [neuralThreads, setNeuralThreads] = useState<string[]>([]);
   const [backgroundConstellations, setBackgroundConstellations] = useState<string[]>([]);
   const [coreConnections, setCoreConnections] = useState<{id: string, path: string, color: string}[]>([]);
-  const [bridgePaths, setBridgePaths] = useState<string[]>([]);
-  const [discoveredNodeId, setDiscoveredNodeId] = useState<string | null>(null);
+  const [legacyThreads, setLegacyThreads] = useState<{id: string, path: string, color: string}[]>([]);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [clickBurst, setClickBurst] = useState<string | null>(null);
 
@@ -41,25 +40,25 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
   useEffect(() => {
     // Generate primary neural threads
-    const generatedThreads = Array.from({ length: 45 }).map(() => {
-      const startX = 420 + (Math.random() - 0.5) * 150;
-      const startY = 420 + (Math.random() - 0.5) * 150;
-      const endX = 420 + (Math.random() - 0.5) * 850;
-      const endY = 420 + (Math.random() - 0.5) * 850;
-      const cp1x = startX + (Math.random() - 0.5) * 500;
-      const cp1y = startY + (Math.random() - 0.5) * 500;
-      const cp2x = endX + (Math.random() - 0.5) * 500;
-      const cp2y = endY + (Math.random() - 0.5) * 500;
+    const generatedThreads = Array.from({ length: 60 }).map(() => {
+      const startX = 420 + (Math.random() - 0.5) * 200;
+      const startY = 420 + (Math.random() - 0.5) * 200;
+      const endX = 420 + (Math.random() - 0.5) * 1000;
+      const endY = 420 + (Math.random() - 0.5) * 1000;
+      const cp1x = startX + (Math.random() - 0.5) * 600;
+      const cp1y = startY + (Math.random() - 0.5) * 600;
+      const cp2x = endX + (Math.random() - 0.5) * 600;
+      const cp2y = endY + (Math.random() - 0.5) * 600;
       return `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
     });
     setNeuralThreads(generatedThreads);
 
     // Distant background lines
-    const bgLines = Array.from({ length: 40 }).map(() => {
+    const bgLines = Array.from({ length: 50 }).map(() => {
       const x1 = Math.random() * 800;
       const y1 = Math.random() * 1000;
-      const x2 = x1 + (Math.random() - 0.5) * 400;
-      const y2 = y1 + (Math.random() - 0.5) * 400;
+      const x2 = x1 + (Math.random() - 0.5) * 600;
+      const y2 = y1 + (Math.random() - 0.5) * 600;
       return `M ${x1},${y1} L ${x2},${y2}`;
     });
     setBackgroundConstellations(bgLines);
@@ -74,15 +73,23 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       }));
       setCoreConnections(conns);
 
-      // Expansion bridge paths
-      const bridgeLines = Array.from({ length: 15 }).map((_, i) => {
-        const endX = 420 + (Math.random() - 0.5) * 1200;
-        const endY = 1200;
-        const cp1x = 420 + (Math.random() - 0.5) * 400;
-        const cp1y = 700 + (Math.random() * 200);
-        return `M 420,420 C ${cp1x},${cp1y} ${cp1x},${cp1y} ${endX},${endY}`;
+      // Descending Legacy Threads (Bridge to History)
+      const legacy = NODES.filter(n => n.id !== 'curiosity').map((node, i) => {
+        const startX = node.x;
+        const startY = node.y;
+        const endX = 200 + (i * 150);
+        const endY = 1400; // Extend beyond view
+        const cp1x = startX + (Math.random() * 100 - 50);
+        const cp1y = startY + 200;
+        const cp2x = endX + (Math.random() * 100 - 50);
+        const cp2y = endY - 400;
+        return {
+          id: `legacy-${node.id}`,
+          path: `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`,
+          color: node.color
+        };
       });
-      setBridgePaths(bridgeLines);
+      setLegacyThreads(legacy);
     }
 
     const brainTimer = setTimeout(() => setShowBrain(true), 3000);
@@ -99,7 +106,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
     setTimeout(() => setClickBurst(null), 1000);
 
     if (node.id === 'curiosity') {
-      setDiscoveredNodeId('curiosity');
+      setActiveNodeId('curiosity');
       if (!isExpanding) {
         setIsExpanding(true);
         setTimeout(() => {
@@ -109,23 +116,25 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             if (gallery) {
               gallery.scrollIntoView({ behavior: 'smooth' });
             }
-          }, 2500);
+          }, 3500);
         }, 7000);
       }
     } else {
-      setDiscoveredNodeId(node.id === discoveredNodeId ? null : node.id);
+      setActiveNodeId(node.id === activeNodeId ? null : node.id);
     }
   };
 
+  const activeNode = NODES.find(n => n.id === activeNodeId);
+
   return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent cursor-none">
+    <div className="relative w-full h-full flex items-center justify-center overflow-visible bg-transparent cursor-none">
       {/* Cinematic Intro Preamble */}
       <div className="absolute top-12 md:top-24 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center px-6">
         <motion.p 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 5, delay: 6 }}
-          className="text-sm md:text-lg uppercase tracking-[2.5em] text-white/40 font-bold glow-sm whitespace-nowrap italic"
+          className="text-sm md:text-xl uppercase tracking-[1.5em] md:tracking-[2.5em] text-white/40 font-bold glow-sm whitespace-nowrap italic"
         >
           Before the code, there was curiosity.
         </motion.p>
@@ -138,9 +147,9 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         preserveAspectRatio="xMidYMid meet"
         animate={{ 
           scale: isExpanding ? 1.05 : [1, 1.02, 1],
-          rotate: isExpanding ? 0 : [0, 0.2, 0],
+          y: isExpanding ? [0, 15] : [0, -10, 0]
         }}
-        transition={{ duration: 40, repeat: isExpanding ? 0 : Infinity, ease: "easeInOut" }}
+        transition={{ duration: 15, repeat: isExpanding ? 0 : Infinity, ease: "easeInOut" }}
       >
         <defs>
           {NODES.map((node) => (
@@ -164,8 +173,8 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         {/* DISTANT BACKGROUND PARALLAX */}
         <motion.g 
           style={{ 
-            x: useTransform(springX, [0, 800], [20, -20]),
-            y: useTransform(springY, [0, 1000], [20, -20]),
+            x: useTransform(springX, [0, 800], [40, -40]),
+            y: useTransform(springY, [0, 1000], [40, -40]),
           }}
           opacity="0.1"
         >
@@ -177,12 +186,12 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         {/* MAIN INTERACTIVE NETWORK */}
         <motion.g 
           style={{ 
-            x: useTransform(springX, [0, 800], [8, -8]),
-            y: useTransform(springY, [0, 1000], [8, -8]),
+            x: useTransform(springX, [0, 800], [15, -15]),
+            y: useTransform(springY, [0, 1000], [15, -15]),
           }}
         >
           {/* Neural Threads */}
-          <g opacity="0.3">
+          <g opacity="0.25">
             {neuralThreads.map((d, i) => (
               <motion.path
                 key={`thread-${i}`}
@@ -205,24 +214,23 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                   d={conn.path}
                   fill="none"
                   stroke={conn.color}
-                  strokeWidth="1.2"
-                  strokeOpacity={(hoveredNodeId === 'curiosity') ? 0.4 : 0.15}
-                  animate={{ strokeOpacity: (hoveredNodeId === 'curiosity') ? [0.4, 0.8, 0.4] : 0.15 }}
-                  transition={{ duration: 2.5, repeat: Infinity }}
+                  strokeWidth="0.8"
+                  strokeOpacity={(hoveredNodeId === 'curiosity') ? 0.3 : 0.1}
+                  animate={{ strokeOpacity: (hoveredNodeId === 'curiosity') ? [0.3, 0.7, 0.3] : 0.1 }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 />
-                {/* Traveling Energy Surge */}
                 <motion.path
                   d={conn.path}
                   fill="none"
                   stroke={conn.color}
-                  strokeWidth="3"
-                  strokeOpacity="0.6"
-                  initial={{ pathLength: 0, strokeDasharray: "1, 60", strokeDashoffset: 0 }}
-                  animate={{ strokeDashoffset: -120 }}
+                  strokeWidth="2"
+                  strokeOpacity="0.4"
+                  initial={{ pathLength: 0, strokeDasharray: "0, 1", strokeDashoffset: 0 }}
+                  animate={{ strokeDashoffset: -2 }}
                   transition={{
-                    duration: 8,
+                    duration: 10,
                     repeat: Infinity,
-                    delay: i * 0.8,
+                    delay: i * 1.5,
                     ease: "linear"
                   }}
                 />
@@ -230,27 +238,39 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             ))}
           </g>
 
-          {/* Temporal Bridge Expansion */}
+          {/* Temporal Bridge Expansion: Color-coded legacy paths */}
           <AnimatePresence>
             {isExpanding && (
               <g>
-                {bridgePaths.map((d, i) => (
-                  <motion.path
-                    key={`bridge-${i}`}
-                    d={d}
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeOpacity="0.6"
-                    initial={{ pathLength: 0, filter: 'blur(5px)' }}
-                    animate={{ pathLength: 1, filter: 'blur(0px)' }}
-                    transition={{ 
-                      duration: 8, 
-                      ease: [0.22, 1, 0.36, 1], // Quintic Out for smooth cinematic growth
-                      delay: i * 0.15 
-                    }}
-                    className="glow-sm"
-                  />
+                {legacyThreads.map((thread, i) => (
+                  <React.Fragment key={thread.id}>
+                    <motion.path
+                      d={thread.path}
+                      fill="none"
+                      stroke={thread.color}
+                      strokeWidth="2"
+                      strokeOpacity="0.4"
+                      initial={{ pathLength: 0, filter: 'blur(8px)' }}
+                      animate={{ pathLength: 1, filter: 'blur(0px)' }}
+                      transition={{ 
+                        duration: 8, 
+                        ease: [0.22, 1, 0.36, 1],
+                        delay: i * 0.3 
+                      }}
+                      className="glow-sm"
+                    />
+                    {/* Travelling energy pulses along legacy paths */}
+                    <motion.path
+                      d={thread.path}
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="3"
+                      strokeOpacity="0.6"
+                      initial={{ pathLength: 0, strokeDasharray: "1, 100" }}
+                      animate={{ strokeDashoffset: -200 }}
+                      transition={{ duration: 12, repeat: Infinity, delay: 2 + (i * 0.5), ease: "linear" }}
+                    />
+                  </React.Fragment>
                 ))}
               </g>
             )}
@@ -265,40 +285,40 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             strokeOpacity="0.1" 
             initial={{ pathLength: 0 }} 
             animate={{ pathLength: 1 }} 
-            transition={{ duration: 10 }} 
+            transition={{ duration: 12 }} 
           />
 
           {/* Central Core (The Mind) */}
           <AnimatePresence>
             {showBrain && (
               <motion.g initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 8 }}>
-                <circle cx="420" cy="420" r="180" fill="url(#core-glow-grad)" />
+                <circle cx="420" cy="420" r="220" fill="url(#core-glow-grad)" opacity="0.4" />
                 <motion.circle
-                  cx="420" cy="420" r="20" fill="white"
+                  cx="420" cy="420" r="25" fill="white"
                   animate={{ 
-                    scale: isExpanding ? [1, 6, 3] : [1, 2.5, 1], 
-                    opacity: isExpanding ? 1 : [0.4, 1, 0.4], 
-                    filter: isExpanding ? 'blur(40px)' : ['blur(15px)', 'blur(35px)', 'blur(15px)'] 
+                    scale: isExpanding ? [1, 8, 4] : [1, 2, 1], 
+                    opacity: isExpanding ? 1 : [0.4, 0.8, 0.4], 
+                    filter: isExpanding ? 'blur(60px)' : ['blur(20px)', 'blur(45px)', 'blur(20px)'] 
                   }}
-                  transition={{ duration: isExpanding ? 5 : 15, repeat: isExpanding ? 0 : Infinity }}
+                  transition={{ duration: isExpanding ? 6 : 15, repeat: isExpanding ? 0 : Infinity }}
                 />
                 
                 {/* Sonar Awakening Waves */}
-                {[0, 1, 2, 3].map((i) => (
+                {[0, 1, 2].map((i) => (
                   <motion.circle
                     key={`sonar-${i}`}
-                    cx="420" cy="420" r="20"
+                    cx="420" cy="420" r="25"
                     fill="none"
                     stroke="#f59e0b"
-                    strokeWidth="1.5"
+                    strokeWidth="1.2"
                     animate={{
-                      r: isExpanding ? [20, 1800] : [20, 1200],
-                      opacity: isExpanding ? [0.8, 0] : [0.5, 0],
+                      r: isExpanding ? [25, 2000] : [25, 1400],
+                      opacity: isExpanding ? [0.8, 0] : [0.4, 0],
                     }}
                     transition={{
-                      duration: isExpanding ? 6 : 10,
+                      duration: isExpanding ? 7 : 12,
                       repeat: isExpanding ? 1 : Infinity,
-                      delay: i * 2.5,
+                      delay: i * 3.5,
                       ease: "easeOut"
                     }}
                   />
@@ -311,7 +331,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
           {NODES.map((node) => {
             const isVisible = visibleNodes.includes(node.id);
             const isHovered = hoveredNodeId === node.id;
-            const isDiscovered = discoveredNodeId === node.id;
+            const isDiscovered = activeNodeId === node.id;
             const isBursting = clickBurst === node.id;
             const isActive = isHovered || isDiscovered || (externalHighlightId === node.id);
             const isCuriosity = node.id === 'curiosity';
@@ -334,38 +354,38 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                       {/* Reactive Atmosphere Glow */}
                       <motion.circle
                         cx={node.x} cy={node.y}
-                        r={isActive ? 120 : 80}
+                        r={isActive ? 140 : 90}
                         fill={node.color}
                         animate={{ 
-                          opacity: isActive ? 0.25 : 0.08,
-                          scale: isActive ? 1.2 : 1
+                          opacity: isActive ? 0.3 : 0.05,
+                          scale: isActive ? 1.3 : 1
                         }}
                         transition={{ duration: 1.5 }}
-                        className="pointer-events-none blur-[40px]"
+                        className="pointer-events-none blur-[50px]"
                       />
 
                       {/* Orbiting Tech Particles */}
                       {[0, 1, 2, 3, 4].map((i) => (
                         <motion.circle
                           key={`orbit-${node.id}-${i}`}
-                          r={isActive ? 4 : 2.5}
+                          r={isActive ? 5 : 2.5}
                           fill={node.color}
                           animate={{
                             cx: [
-                              node.x + Math.cos((i * Math.PI * 2) / 5) * (isActive ? 65 : 45),
-                              node.x + Math.cos((i * Math.PI * 2) / 5 + Math.PI) * (isActive ? 65 : 45),
-                              node.x + Math.cos((i * Math.PI * 2) / 5 + Math.PI * 2) * (isActive ? 65 : 45),
+                              node.x + Math.cos((i * Math.PI * 2) / 5) * (isActive ? 75 : 50),
+                              node.x + Math.cos((i * Math.PI * 2) / 5 + Math.PI) * (isActive ? 75 : 50),
+                              node.x + Math.cos((i * Math.PI * 2) / 5 + Math.PI * 2) * (isActive ? 75 : 50),
                             ],
                             cy: [
-                              node.y + Math.sin((i * Math.PI * 2) / 5) * (isActive ? 65 : 45),
-                              node.y + Math.sin((i * Math.PI * 2) / 5 + Math.PI) * (isActive ? 65 : 45),
-                              node.y + Math.sin((i * Math.PI * 2) / 5 + Math.PI * 2) * (isActive ? 65 : 45),
+                              node.y + Math.sin((i * Math.PI * 2) / 5) * (isActive ? 75 : 50),
+                              node.y + Math.sin((i * Math.PI * 2) / 5 + Math.PI) * (isActive ? 75 : 50),
+                              node.y + Math.sin((i * Math.PI * 2) / 5 + Math.PI * 2) * (isActive ? 75 : 50),
                             ],
-                            opacity: isActive ? [0.4, 1, 0.4] : [0.2, 0.6, 0.2],
-                            scale: isBursting ? [1, 4, 0] : 1
+                            opacity: isActive ? [0.5, 1, 0.5] : [0.2, 0.5, 0.2],
+                            scale: isBursting ? [1, 5, 0] : 1
                           }}
                           transition={{
-                            duration: (isHovered ? 4 : 8) + i * 0.8,
+                            duration: (isHovered ? 4 : 10) + i * 1.2,
                             repeat: isBursting ? 0 : Infinity,
                             ease: isBursting ? "easeOut" : "linear"
                           }}
@@ -376,39 +396,39 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                       {/* Rotating Ring Systems */}
                       <motion.circle
                         cx={node.x} cy={node.y}
-                        r={isActive ? 55 : 38}
+                        r={isActive ? 65 : 45}
                         fill="none"
                         stroke={node.color}
-                        strokeWidth="1"
-                        strokeOpacity="0.3"
-                        strokeDasharray="10 5"
-                        animate={{ rotate: 360, scale: isActive ? [1, 1.1, 1] : 1 }}
-                        transition={{ duration: isHovered ? 6 : 15, repeat: Infinity, ease: "linear" }}
+                        strokeWidth="1.5"
+                        strokeOpacity="0.25"
+                        strokeDasharray="12 6"
+                        animate={{ rotate: 360, scale: isActive ? [1, 1.15, 1] : 1 }}
+                        transition={{ duration: isHovered ? 6 : 18, repeat: Infinity, ease: "linear" }}
                       />
 
                       {/* Core Game-like Point */}
                       <motion.circle
                         cx={node.x} cy={node.y} 
-                        r={isCuriosity ? (isActive ? 35 : 28) : (isActive ? 24 : 16)}
+                        r={isCuriosity ? (isActive ? 40 : 32) : (isActive ? 28 : 18)}
                         fill={node.color} 
                         animate={{ 
-                          scale: isHovered ? 1.2 : 1,
-                          filter: isActive ? `drop-shadow(0 0 25px ${node.color})` : "none",
+                          scale: isHovered ? 1.25 : 1,
+                          filter: isActive ? `drop-shadow(0 0 35px ${node.color})` : "none",
                           stroke: "#fff",
-                          strokeWidth: isActive ? 2 : 0,
-                          strokeOpacity: isActive ? 0.6 : 0
+                          strokeWidth: isActive ? 2.5 : 0,
+                          strokeOpacity: isActive ? 0.7 : 0
                         }}
-                        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                        transition={{ type: "spring", stiffness: 120, damping: 25 }}
                         filter={`url(#glow-${node.id})`}
                       />
 
                       {/* High-Impact Label */}
                       <motion.text
-                        x={node.x} y={node.y + (node.y > 420 ? 110 : -100)} textAnchor="middle"
-                        fill={isActive ? "white" : "rgba(255,255,255,0.4)"}
-                        fontSize={isActive ? "20" : "16"} fontWeight="800" 
-                        className="font-body tracking-[0.6em] uppercase transition-all duration-700"
-                        style={{ filter: isActive ? `drop-shadow(0 0 15px ${node.color})` : "none" }}
+                        x={node.x} y={node.y + (node.y > 500 ? 120 : -110)} textAnchor="middle"
+                        fill={isActive ? "white" : "rgba(255,255,255,0.35)"}
+                        fontSize={isActive ? "28" : "22"} fontWeight="800" 
+                        className="font-body tracking-[0.6em] uppercase transition-all duration-700 pointer-events-none"
+                        style={{ filter: isActive ? `drop-shadow(0 0 20px ${node.color})` : "none" }}
                       >
                         {node.label}
                       </motion.text>
@@ -420,32 +440,31 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                             initial={{ opacity: 0, y: 40, scale: 0.7, filter: 'blur(20px)' }}
                             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
                             exit={{ opacity: 0, y: 20, scale: 0.8, filter: 'blur(10px)' }}
-                            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                           >
                             <path
-                              d={`M ${node.x - 160} ${node.y + (node.y > 420 ? -260 : 140)} L ${node.x + 160} ${node.y + (node.y > 420 ? -260 : 140)} L ${node.x + 180} ${node.y + (node.y > 420 ? -140 : 260)} L ${node.x - 180} ${node.y + (node.y > 420 ? -140 : 260)} Z`}
-                              fill="rgba(5, 5, 8, 0.9)"
+                              d={`M ${node.x - 180} ${node.y + (node.y > 500 ? -300 : 160)} L ${node.x + 180} ${node.y + (node.y > 500 ? -300 : 160)} L ${node.x + 200} ${node.y + (node.y > 500 ? -160 : 300)} L ${node.x - 200} ${node.y + (node.y > 500 ? -160 : 300)} Z`}
+                              fill="rgba(5, 5, 8, 0.95)"
                               stroke={node.color}
-                              strokeWidth="2"
-                              strokeOpacity="0.8"
+                              strokeWidth="2.5"
+                              strokeOpacity="0.85"
                               className="backdrop-blur-3xl shadow-2xl"
                             />
                             <foreignObject
-                              x={node.x - 140}
-                              y={node.y + (node.y > 420 ? -240 : 160)}
-                              width="280"
+                              x={node.x - 160}
+                              y={node.y + (node.y > 500 ? -280 : 180)}
+                              width="320"
                               height="100"
                             >
-                              <div className="text-[14px] md:text-[16px] text-white/95 leading-relaxed tracking-[0.2em] font-body text-center flex items-center justify-center h-full italic uppercase font-bold p-4">
+                              <div className="text-[16px] md:text-[18px] text-white/95 leading-relaxed tracking-[0.2em] font-body text-center flex items-center justify-center h-full italic uppercase font-bold p-4">
                                 {node.insight}
                               </div>
                             </foreignObject>
                             
-                            {/* Energy Thread from Node to Shard */}
                             <motion.line 
-                              x1={node.x} y1={node.y + (node.y > 420 ? -60 : 60)}
-                              x2={node.x} y2={node.y + (node.y > 420 ? -140 : 140)}
-                              stroke={node.color} strokeWidth="2" strokeDasharray="6 6"
+                              x1={node.x} y1={node.y + (node.y > 500 ? -70 : 70)}
+                              x2={node.x} y2={node.y + (node.y > 500 ? -160 : 160)}
+                              stroke={node.color} strokeWidth="2.5" strokeDasharray="8 8"
                               initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
                               transition={{ duration: 1.5 }}
                             />
@@ -456,12 +475,12 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                       {/* Curiosity Narrative Gateway */}
                       {isCuriosity && !isExpanding && (
                         <motion.g initial={{ opacity: 0 }} animate={{ opacity: isActive ? 1 : 0.6 }} transition={{ duration: 3 }}>
-                          <text x={node.x} y={node.y + 130} textAnchor="middle" fill="white" className="text-[14px] uppercase tracking-[1.2em] font-black glow-sm">
+                          <text x={node.x} y={node.y + 140} textAnchor="middle" fill="white" className="text-[18px] uppercase tracking-[1.2em] font-black glow-sm pointer-events-none">
                             {isActive ? "UNFOLD HISTORY" : "IGNITE"}
                           </text>
                           <motion.path
-                            d={`M ${node.x - 12} ${node.y + 150} L ${node.x} ${node.y + 162} L ${node.x + 12} ${node.y + 150}`}
-                            fill="none" stroke="white" strokeWidth="3" animate={{ y: [0, 12, 0] }}
+                            d={`M ${node.x - 15} ${node.y + 165} L ${node.x} ${node.y + 180} L ${node.x + 15} ${node.y + 165}`}
+                            fill="none" stroke="white" strokeWidth="4" animate={{ y: [0, 15, 0] }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                           />
                         </motion.g>
@@ -486,8 +505,8 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             className="absolute inset-0 flex items-center justify-center text-center z-50 bg-[#050508]"
           >
             <div className="space-y-16">
-              <motion.div initial={{ letterSpacing: "5em", opacity: 0 }} animate={{ letterSpacing: "3em", opacity: 1 }} transition={{ duration: 8 }}>
-                <h1 className="text-7xl md:text-[11rem] font-bold text-white tracking-tighter italic uppercase leading-none">
+              <motion.div initial={{ letterSpacing: "5em", opacity: 0 }} animate={{ letterSpacing: "2em", opacity: 1 }} transition={{ duration: 8 }}>
+                <h1 className="text-6xl md:text-[10rem] font-bold text-white tracking-tighter italic uppercase leading-none">
                   The Mind of a <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">
                     Woman Developer
@@ -498,7 +517,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 5, delay: 3 }}
-                className="text-[16px] md:text-2xl text-white/50 tracking-[1.5em] uppercase font-light mt-8 px-12 max-w-7xl mx-auto leading-relaxed"
+                className="text-[18px] md:text-2xl text-white/50 tracking-[1.5em] uppercase font-light mt-8 px-12 max-w-7xl mx-auto leading-relaxed"
               >
                 Where logic, creativity, empathy, collaboration, and curiosity connect.
               </motion.p>
