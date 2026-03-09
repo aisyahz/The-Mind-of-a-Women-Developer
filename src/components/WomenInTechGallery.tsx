@@ -9,6 +9,7 @@ const WOMEN_FIGURES = [
     name: "Ada Lovelace",
     image: "https://image2url.com/r2/default/images/1773030196135-abfefd18-0d7a-459e-a0dd-33c332ba03ac.png",
     caption: "Often regarded as the first computer programmer.",
+    quote: "That brain of mine is something more than merely mortal.",
     color: "#a855f7",
     nodeSource: "Creativity",
     startX: 400,
@@ -17,6 +18,7 @@ const WOMEN_FIGURES = [
     name: "Grace Hopper",
     image: "https://image2url.com/r2/default/images/1773030220691-47d33614-a2f1-427a-a6f1-e79dc950c94b.png",
     caption: "Pioneer of modern programming languages and creator of COBOL.",
+    quote: "The most dangerous phrase is: 'We've always done it this way.'",
     color: "#3b82f6",
     nodeSource: "Logic",
     startX: 520,
@@ -25,6 +27,7 @@ const WOMEN_FIGURES = [
     name: "Margaret Hamilton",
     image: "https://image2url.com/r2/default/images/1773030464884-ba20030d-6257-4673-9177-be1d42cf2029.png",
     caption: "Led the development of the Apollo guidance software.",
+    quote: "There was no choice but to be pioneers.",
     color: "#f43f5e",
     nodeSource: "Empathy",
     startX: 300,
@@ -33,6 +36,7 @@ const WOMEN_FIGURES = [
     name: "Radia Perlman",
     image: "https://image2url.com/r2/default/images/1773030535115-f2041c60-0d97-4275-bf7b-315f5bd4b94f.png",
     caption: "Invented key networking protocols fundamental to the modern internet.",
+    quote: "I don't like complexity. I like things that are simple.",
     color: "#22d3ee",
     nodeSource: "Collaboration",
     startX: 560,
@@ -191,7 +195,7 @@ export const WomenInTechGallery: React.FC = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ duration: 1.0, delay: figureDelay + 0.5 }}
-                    className="relative w-full max-w-[220px] pt-16 pb-10 px-6 flex flex-col items-center justify-center overflow-hidden"
+                    className="relative w-full max-w-[220px] pt-16 pb-12 px-6 flex flex-col items-center justify-center overflow-hidden"
                     style={{
                       clipPath: 'polygon(15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%)',
                     }}
@@ -218,6 +222,11 @@ export const WomenInTechGallery: React.FC = () => {
                       
                       <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed max-w-[140px] mx-auto group-hover:text-white/60 transition-all duration-500">
                         {woman.caption}
+                      </p>
+
+                      {/* Inspirational Quote - Materializes on Hover */}
+                      <p className="text-[8px] text-white/40 italic tracking-[0.1em] mt-4 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-700 glow-sm max-w-[150px] mx-auto">
+                        "{woman.quote}"
                       </p>
                     </div>
 
