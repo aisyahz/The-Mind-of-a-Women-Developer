@@ -88,15 +88,20 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
     if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
       
-      onExplore?.();
-
+      // Delay the explore trigger to let the lines branch out visually first
       setTimeout(() => {
-        const gallery = document.getElementById('gallery-section');
-        if (gallery) {
-          gallery.scrollIntoView({ behavior: 'smooth' });
-        }
-        setTimeout(() => setIsExpanding(false), 3000);
-      }, 1000);
+        onExplore?.();
+        
+        // Final smooth scroll adjustment
+        setTimeout(() => {
+          const gallery = document.getElementById('gallery-section');
+          if (gallery) {
+            gallery.scrollIntoView({ behavior: 'smooth' });
+          }
+          // Reset expansion state after a long duration
+          setTimeout(() => setIsExpanding(false), 5000);
+        }, 800);
+      }, 1200);
     }
   };
 
@@ -171,26 +176,32 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             ))}
           </g>
 
-          {/* Temporal Expansion Pulse */}
+          {/* Temporal Expansion Pulse - Complex Branching */}
           <AnimatePresence>
             {isExpanding && (
               <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                {[0, 1, 2, 3].map((idx) => (
-                  <motion.path
-                    key={`expansion-line-${idx}`}
-                    d={`M 420,410 C ${420},500 ${150 + idx * 250},700 ${150 + idx * 250},1200`}
-                    fill="none"
-                    stroke="rgba(139, 92, 246, 0.4)"
-                    strokeWidth="1.5"
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: [0, 0.8, 0.3] }}
-                    transition={{ 
-                      duration: 4.5, 
-                      ease: "easeInOut", 
-                      delay: idx * 0.1 
-                    }}
-                  />
-                ))}
+                {[0, 1, 2, 3, 4, 5].map((idx) => {
+                  const targetX = 100 + (idx * 120);
+                  const cp1x = 420 + (Math.random() - 0.5) * 200;
+                  const cp2x = targetX + (Math.random() - 0.5) * 200;
+                  
+                  return (
+                    <motion.path
+                      key={`expansion-line-${idx}`}
+                      d={`M 420,410 C ${cp1x},600 ${cp2x},800 ${targetX},1300`}
+                      fill="none"
+                      stroke="rgba(139, 92, 246, 0.4)"
+                      strokeWidth="1.2"
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={{ pathLength: 1, opacity: [0, 0.7, 0.2] }}
+                      transition={{ 
+                        duration: 5.5, 
+                        ease: "easeInOut", 
+                        delay: idx * 0.15 
+                      }}
+                    />
+                  );
+                })}
               </motion.g>
             )}
           </AnimatePresence>
