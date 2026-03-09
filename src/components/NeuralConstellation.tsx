@@ -88,17 +88,14 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
     if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
       
-      // Delay the explore trigger to let the lines branch out visually first
       setTimeout(() => {
         onExplore?.();
         
-        // Final smooth scroll adjustment
         setTimeout(() => {
           const gallery = document.getElementById('gallery-section');
           if (gallery) {
             gallery.scrollIntoView({ behavior: 'smooth' });
           }
-          // Reset expansion state after a long duration
           setTimeout(() => setIsExpanding(false), 5000);
         }, 1200);
       }, 1500);
@@ -176,7 +173,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             ))}
           </g>
 
-          {/* Temporal Expansion Pulse - Complex Branching */}
+          {/* Temporal Expansion Pulse */}
           <AnimatePresence>
             {isExpanding && (
               <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -402,11 +399,11 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                         {node.label}
                       </motion.text>
 
-                      {/* Persistent CTA for Curiosity */}
+                      {/* Persistent CTA for Curiosity with Arrows */}
                       {isCuriosity && (
                         <motion.g 
                           initial={{ opacity: 0 }}
-                          animate={{ opacity: isActive ? 1 : 0.3 }}
+                          animate={{ opacity: isActive ? 1 : 0.4 }}
                           transition={{ duration: 1 }}
                         >
                           <text 
@@ -418,6 +415,15 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                           >
                             {isActive ? "Discover the pioneers" : "Tap to Explore"}
                           </text>
+                          {/* Bouncing Arrow Indicator */}
+                          <motion.path
+                            d={`M ${node.x - 4} ${node.y + 80} L ${node.x} ${node.y + 84} L ${node.x + 4} ${node.y + 80}`}
+                            fill="none"
+                            stroke="white"
+                            strokeWidth="1"
+                            animate={{ y: [0, 4, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                          />
                         </motion.g>
                       )}
                     </>

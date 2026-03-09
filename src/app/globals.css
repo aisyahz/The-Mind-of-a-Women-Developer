@@ -35,9 +35,10 @@
     @apply bg-background text-foreground selection:bg-primary/30 selection:text-primary-foreground;
     scrollbar-width: thin;
     scrollbar-color: rgba(139, 92, 246, 0.3) hsl(var(--background));
+    cursor: none; /* Hide default cursor for custom implementation */
   }
 
-  /* Custom Scrollbar for Webkit Browsers */
+  /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -57,6 +58,31 @@
     background: linear-gradient(to bottom, rgba(59, 130, 246, 0.5), rgba(139, 92, 246, 0.6), rgba(244, 63, 94, 0.5));
     box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
   }
+}
+
+/* Custom Cursor Node */
+.custom-cursor {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transition: transform 0.15s ease-out;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.custom-cursor-glow {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.25s ease-out;
 }
 
 .font-body {
