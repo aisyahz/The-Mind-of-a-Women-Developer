@@ -76,10 +76,9 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
     if (!allViewed || isTransitioning) return;
     setIsTransitioning(true);
     
-    // Staged cinematic sequence
     setTimeout(() => {
       onLegacyComplete?.();
-    }, 2500); // Wait for the "growing line" animation to start its descent
+    }, 2500);
   };
 
   useEffect(() => {
@@ -116,52 +115,82 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
         viewport={{ once: true }}
         className="text-center mb-16 relative z-10"
       >
-        <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-6 font-medium">
-          THE CONSTELLATION THAT CAME BEFORE US
-        </p>
-        <h2 className="text-4xl md:text-7xl font-bold text-white tracking-tighter italic uppercase leading-none mb-12">
-          Women Who <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">
-            Shaped the Code
-          </span>
-        </h2>
+        <div className="space-y-4 mb-12">
+          <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 font-medium">
+            THE CONSTELLATION THAT CAME BEFORE US
+          </p>
+          <h2 className="text-4xl md:text-7xl font-bold text-white tracking-tighter italic uppercase leading-none">
+            Women Who <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">
+              Shaped the Code
+            </span>
+          </h2>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-[9px] uppercase tracking-[0.6em] text-primary/60 font-bold"
+          >
+            {allViewed ? "Discovery Complete" : `Discover ${viewedIndices.size}/${WOMEN_FIGURES.length} Pioneers`}
+          </motion.div>
+        </div>
 
         {/* Navigation Orbs */}
         <div className="flex justify-center gap-8 md:gap-12 relative">
-          {WOMEN_FIGURES.map((woman, idx) => (
-            <button
-              key={`nav-${woman.id}`}
-              onClick={() => handleNavClick(idx)}
-              className="group relative flex flex-col items-center"
-            >
-              <motion.div
-                animate={{
-                  scale: activeIndex === idx ? 1.5 : 1,
-                  backgroundColor: activeIndex === idx ? woman.color : "rgba(255,255,255,0.2)",
-                  boxShadow: activeIndex === idx ? `0 0 20px ${woman.color}` : "0 0 0px transparent"
-                }}
-                className="w-3 h-3 rounded-full transition-colors duration-500"
-              />
-              <AnimatePresence>
-                {activeIndex === idx && (
-                  <motion.div
-                    layoutId="orb-ring"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 0.4, scale: 2.5 }}
-                    exit={{ opacity: 0, scale: 0.5 }}
-                    className="absolute inset-0 rounded-full border border-white/40"
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-                  />
-                )}
-              </AnimatePresence>
-              <motion.span 
-                animate={{ opacity: activeIndex === idx ? 1 : 0.3 }}
-                className="absolute top-8 text-[8px] uppercase tracking-[0.4em] text-white font-bold whitespace-nowrap"
+          {WOMEN_FIGURES.map((woman, idx) => {
+            const isViewed = viewedIndices.has(idx);
+            return (
+              <button
+                key={`nav-${woman.id}`}
+                onClick={() => handleNavClick(idx)}
+                className="group relative flex flex-col items-center"
               >
-                {woman.name.split(' ')[0]}
-              </motion.span>
-            </button>
-          ))}
+                <motion.div
+                  animate={{
+                    scale: activeIndex === idx ? 1.5 : (isViewed ? 1 : [1, 1.2, 1]),
+                    backgroundColor: activeIndex === idx ? woman.color : (isViewed ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.15)"),
+                    boxShadow: activeIndex === idx 
+                      ? `0 0 20px ${woman.color}` 
+                      : (isViewed ? "0 0 0px transparent" : `0 0 10px ${woman.color}44`)
+                  }}
+                  transition={{ 
+                    duration: isViewed ? 0.5 : 2, 
+                    repeat: isViewed ? 0 : Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="w-3 h-3 rounded-full transition-colors duration-500"
+                />
+                
+                <AnimatePresence>
+                  {activeIndex === idx && (
+                    <motion.div
+                      layoutId="orb-ring"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 0.4, scale: 2.5 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      className="absolute inset-0 rounded-full border border-white/40"
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                    />
+                  )}
+                </AnimatePresence>
+
+                {!isViewed && (
+                   <motion.div 
+                     initial={{ opacity: 0 }}
+                     animate={{ opacity: [0, 0.3, 0] }}
+                     transition={{ duration: 3, repeat: Infinity }}
+                     className="absolute -top-1 w-4 h-4 border border-white/20 rounded-full"
+                   />
+                )}
+
+                <motion.span 
+                  animate={{ opacity: activeIndex === idx ? 1 : 0.3 }}
+                  className="absolute top-8 text-[8px] uppercase tracking-[0.4em] text-white font-bold whitespace-nowrap"
+                >
+                  {woman.name.split(' ')[0]}
+                </motion.span>
+              </button>
+            );
+          })}
           <div className="absolute top-1.5 left-0 right-0 h-[1px] bg-white/5 -z-10" />
         </div>
       </motion.div>
@@ -196,7 +225,6 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Orbital Star Particles */}
               {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={`orbit-${i}`}
@@ -216,7 +244,6 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
                 </motion.div>
               ))}
               
-              {/* Halos */}
               <motion.div 
                 animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }}
                 transition={{ duration: 3, repeat: Infinity }}
@@ -237,14 +264,16 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
               <p className="text-xs md:text-sm text-white/60 leading-relaxed tracking-wide">
                 {currentWoman.caption}
               </p>
-              <motion.p 
+              <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="text-xs italic text-white/80 glow-sm pt-4 border-t border-white/10"
+                className="pt-4 border-t border-white/10"
               >
-                "{currentWoman.quote}"
-              </motion.p>
+                 <p className="text-xs italic text-white/80 glow-sm">
+                   "{currentWoman.quote}"
+                 </p>
+              </motion.div>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -276,7 +305,6 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
               />
             ))}
             
-            {/* The Descent Line */}
             <AnimatePresence>
               {isTransitioning && (
                 <motion.path
@@ -296,19 +324,19 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
         <div className="relative flex flex-col items-center z-10">
           <motion.p 
             animate={{ 
-              opacity: allViewed ? (legacyHovered ? 1 : 0.6) : 0.1,
-              filter: allViewed ? 'blur(0px)' : 'blur(2px)'
+              opacity: allViewed ? (legacyHovered ? 1 : 0.6) : 0.2,
+              filter: allViewed ? 'blur(0px)' : 'blur(1px)'
             }}
             className="text-[10px] uppercase tracking-[1.2em] text-white font-bold mb-10 whitespace-nowrap glow-sm"
           >
-            Legacy continues
+            {allViewed ? "Legacy continues" : "Legacy Locked"}
           </motion.p>
 
           <motion.div
-            onMouseEnter={() => setLegacyHovered(true)}
+            onMouseEnter={() => allViewed && setLegacyHovered(true)}
             onMouseLeave={() => setLegacyHovered(false)}
             onClick={handleLegacyClick}
-            className={`relative flex items-center justify-center group ${allViewed ? 'cursor-none' : 'cursor-not-allowed opacity-20'}`}
+            className={`relative flex items-center justify-center group ${allViewed ? 'cursor-none' : 'cursor-default'}`}
           >
             {/* Halo Expansion */}
             <AnimatePresence>
@@ -344,15 +372,15 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
             {/* Core Node */}
             <motion.div
               animate={{
-                scale: isTransitioning ? [1, 2.5, 0.8] : (legacyHovered ? 1.4 : 1),
-                opacity: isTransitioning ? [1, 1, 0] : 1,
-                backgroundColor: allViewed ? "#fff" : "#333",
+                scale: isTransitioning ? [1, 2.5, 0.8] : (allViewed ? (legacyHovered ? 1.4 : 1) : 1),
+                opacity: isTransitioning ? [1, 1, 0] : (allViewed ? 1 : 0.3),
+                backgroundColor: allViewed ? "#fff" : "rgba(255,255,255,0.1)",
                 boxShadow: legacyHovered && allViewed
                   ? "0 0 60px rgba(255, 255, 255, 0.9), 0 0 100px rgba(139, 92, 246, 0.8)" 
                   : "0 0 15px rgba(255, 255, 255, 0.2)"
               }}
               transition={{ duration: isTransitioning ? 2 : 0.5, ease: "easeInOut" }}
-              className={`w-5 h-5 rounded-full relative z-20`}
+              className={`w-5 h-5 rounded-full relative z-20 border ${allViewed ? 'border-transparent' : 'border-white/20'}`}
             />
 
             {/* Orbital Particles on Hover */}
@@ -382,13 +410,19 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
 
           <motion.div 
             animate={{ 
-              opacity: legacyHovered && allViewed ? 1 : 0.2,
+              opacity: allViewed ? (legacyHovered ? 1 : 0.4) : 0.2,
               y: legacyHovered ? 10 : 0
             }}
             className="text-center mt-12 space-y-4"
           >
             <p className="text-[9px] uppercase tracking-[0.6em] text-white font-medium transition-all duration-700">
-              {isTransitioning ? "Traveling through time..." : (allViewed ? "Follow the constellation" : `Explore ${WOMEN_FIGURES.length - viewedIndices.size} more pioneers`)}
+              {isTransitioning 
+                ? "Traveling through time..." 
+                : (allViewed 
+                    ? "Follow the constellation" 
+                    : `Explore ${WOMEN_FIGURES.length - viewedIndices.size} more pioneers to unlock`
+                  )
+              }
             </p>
             {allViewed && !isTransitioning && (
                <motion.div 
