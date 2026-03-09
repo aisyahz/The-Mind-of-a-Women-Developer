@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
@@ -58,9 +58,18 @@ interface WomenInTechGalleryProps {
 }
 
 export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPioneerHover, onLegacyComplete }) => {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [legacyHovered, setLegacyHovered] = useState(false);
+  const [viewedIndices, setViewedIndices] = useState<Set<number>>(new Set([0]));
+
+  const currentWoman = WOMEN_FIGURES[activeIndex];
+
+  const handleNavClick = (index: number) => {
+    setActiveIndex(index);
+    setViewedIndices(prev => new Set(Array.from(prev).concat(index)));
+    onPioneerHover(WOMEN_FIGURES[index].heroNodeId);
+  };
 
   const handleLegacyClick = () => {
     if (isTransitioning) return;
@@ -68,21 +77,29 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
     onLegacyComplete?.();
   };
 
+  // Auto-highlight hero node when active pioneer changes
+  useEffect(() => {
+    onPioneerHover(currentWoman.heroNodeId);
+    return () => onPioneerHover(null);
+  }, [activeIndex, currentWoman.heroNodeId, onPioneerHover]);
+
   return (
-    <div id="gallery-section" className="relative pt-48 pb-64 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
+    <div id="gallery-section" className="relative py-32 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
-      {/* Background Labels & Atmosphere */}
+      {/* Background Atmosphere */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
         <svg viewBox="0 0 1200 800" className="w-full h-full">
           {WOMEN_FIGURES.map((woman, idx) => (
-            <motion.g key={`bg-label-${idx}`}>
+            <motion.g 
+              key={`bg-label-${idx}`}
+              animate={{ opacity: activeIndex === idx ? 0.6 : 0.1 }}
+            >
               <text
                 x={150 + (idx * 300)} y={600 + (Math.sin(idx) * 50)}
-                fill="white" fontSize="8" className="uppercase tracking-[0.5em] font-light opacity-30 italic"
+                fill="white" fontSize="8" className="uppercase tracking-[0.5em] font-light italic"
               >
                 {woman.bgLabel}
               </text>
-              <circle cx={150 + (idx * 300)} cy={600 + (Math.sin(idx) * 50)} r="1" fill="white" className="opacity-20" />
             </motion.g>
           ))}
         </svg>
@@ -90,140 +107,164 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
 
       {/* Section Header */}
       <motion.div 
-        initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-        whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        className="text-center mb-48 relative z-10"
+        className="text-center mb-16 relative z-10"
       >
         <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-6 font-medium">
           THE CONSTELLATION THAT CAME BEFORE US
         </p>
-        <h2 className="text-5xl md:text-8xl font-bold text-white tracking-tighter italic uppercase leading-none">
+        <h2 className="text-4xl md:text-7xl font-bold text-white tracking-tighter italic uppercase leading-none mb-12">
           Women Who <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">
             Shaped the Code
           </span>
         </h2>
+
+        {/* Navigation Orbs */}
+        <div className="flex justify-center gap-8 md:gap-12 relative">
+          {WOMEN_FIGURES.map((woman, idx) => (
+            <button
+              key={`nav-${woman.id}`}
+              onClick={() => handleNavClick(idx)}
+              className="group relative flex flex-col items-center"
+            >
+              <motion.div
+                animate={{
+                  scale: activeIndex === idx ? 1.5 : 1,
+                  backgroundColor: activeIndex === idx ? woman.color : "rgba(255,255,255,0.2)",
+                  boxShadow: activeIndex === idx ? `0 0 20px ${woman.color}` : "0 0 0px transparent"
+                }}
+                className="w-3 h-3 rounded-full transition-colors duration-500"
+              />
+              <AnimatePresence>
+                {activeIndex === idx && (
+                  <motion.div
+                    layoutId="orb-ring"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 0.4, scale: 2.5 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
+                    className="absolute inset-0 rounded-full border border-white/40"
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                  />
+                )}
+              </AnimatePresence>
+              <motion.span 
+                animate={{ opacity: activeIndex === idx ? 1 : 0.3 }}
+                className="absolute top-8 text-[8px] uppercase tracking-[0.4em] text-white font-bold whitespace-nowrap"
+              >
+                {woman.name.split(' ')[0]}
+              </motion.span>
+            </button>
+          ))}
+          
+          {/* Connecting Line behind Orbs */}
+          <div className="absolute top-1.5 left-0 right-0 h-[1px] bg-white/5 -z-10" />
+        </div>
       </motion.div>
 
-      {/* Figures Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-24 md:gap-12 max-w-7xl w-full px-4 relative z-10 mb-48">
-        {WOMEN_FIGURES.map((woman, idx) => {
-          const delay = 0.5 + idx * 1.5;
-          const isHovered = hoveredId === woman.id;
-
-          return (
-            <div 
-              key={woman.id} 
-              className="relative flex flex-col items-center"
-              onMouseEnter={() => {
-                setHoveredId(woman.id);
-                onPioneerHover(woman.heroNodeId);
-              }}
-              onMouseLeave={() => {
-                setHoveredId(null);
-                onPioneerHover(null);
-              }}
-            >
-              {/* Star Node Atmosphere */}
+      {/* Active Pioneer Display */}
+      <div className="relative w-full max-w-4xl h-[500px] flex items-center justify-center z-10">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentWoman.id}
+            initial={{ opacity: 0, scale: 0.9, filter: 'blur(20px)', x: 50 }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', x: 0 }}
+            exit={{ opacity: 0, scale: 1.1, filter: 'blur(20px)', x: -50 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="relative flex flex-col md:flex-row items-center gap-12 md:gap-24"
+          >
+            {/* Portrait Node */}
+            <div className="relative">
               <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.4] }}
-                viewport={{ once: true }}
-                transition={{ duration: 2, delay }}
-                className="absolute top-24 w-64 h-64 rounded-full blur-[80px]"
-                style={{ backgroundColor: woman.color }}
+                animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="absolute inset-0 rounded-full blur-[60px]"
+                style={{ backgroundColor: currentWoman.color }}
               />
-
-              {/* Orbital Rings */}
-              <div className="absolute top-24 w-80 h-80 flex items-center justify-center pointer-events-none">
-                {[120, 160].map((radius, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute rounded-full border border-white/5"
-                    style={{ width: radius * 2, height: radius * 2 }}
-                    animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                    transition={{ duration: 30 + i * 10, repeat: Infinity, ease: "linear" }}
-                  />
-                ))}
+              
+              <div className="relative w-64 h-80">
+                <Image 
+                  src={currentWoman.image} 
+                  alt={currentWoman.name} 
+                  fill 
+                  className="object-contain filter grayscale brightness-90"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-60" />
               </div>
 
-              {/* Node Portrait Card */}
-              <motion.div
-                initial={{ opacity: 0, filter: 'blur(20px)', scale: 0.9, y: 30 }}
-                whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1.5, delay: delay + 0.2, ease: [0.16, 1, 0.3, 1] }}
-                className="group relative flex flex-col items-center w-full"
-              >
-                <div className="relative w-full flex flex-col items-center">
-                  <motion.div className="relative w-56 h-72 z-10 transition-all duration-700 ease-out group-hover:-translate-y-6">
-                    <Image src={woman.image} alt={woman.name} fill className="object-contain filter grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 transition-all duration-700" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
-                  </motion.div>
-
-                  <div className="relative w-full max-w-[220px] pt-12 pb-12 px-6 flex flex-col items-center text-center">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 text-[7px] uppercase tracking-[0.6em] text-white/20 font-bold whitespace-nowrap">
-                      {woman.nodeSource} Branch
-                    </div>
-                    <h3 className="text-lg font-bold text-white tracking-[0.12em] uppercase italic mb-2">
-                      {woman.name}
-                    </h3>
-                    <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed mb-4">
-                      {woman.caption}
-                    </p>
-
-                    {/* Sequential Quote */}
-                    <AnimatePresence>
-                      {isHovered && (
-                        <motion.p 
-                          initial={{ opacity: 0, y: 10 }} 
-                          animate={{ opacity: 1, y: 0 }} 
-                          exit={{ opacity: 0 }}
-                          className="text-[8px] text-white/60 italic tracking-[0.1em] glow-sm"
-                        >
-                          "{woman.quote}"
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              </motion.div>
+              {/* Orbital Star Particles */}
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={`orbit-${i}`}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10 + i * 5, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 pointer-events-none"
+                >
+                  <div 
+                    className="absolute w-1 h-1 bg-white rounded-full"
+                    style={{ 
+                      top: '50%', 
+                      left: '50%', 
+                      transform: `translate(${140 + i * 20}px, -50%)`,
+                      boxShadow: '0 0 10px white' 
+                    }}
+                  />
+                </motion.div>
+              ))}
             </div>
-          );
-        })}
+
+            {/* Content Details */}
+            <div className="max-w-md text-center md:text-left space-y-6">
+              <div className="space-y-2">
+                <p className="text-[10px] uppercase tracking-[0.8em] text-white/30 font-bold">
+                  {currentWoman.nodeSource} Branch
+                </p>
+                <h3 className="text-3xl md:text-5xl font-bold text-white tracking-tighter uppercase italic">
+                  {currentWoman.name}
+                </h3>
+              </div>
+              
+              <p className="text-xs md:text-sm text-white/60 leading-relaxed tracking-wide">
+                {currentWoman.caption}
+              </p>
+
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="text-xs italic text-white/80 glow-sm pt-4 border-t border-white/10"
+              >
+                "{currentWoman.quote}"
+              </motion.p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Legacy Gateway Interaction */}
-      <div className="relative flex flex-col items-center justify-center mt-24">
+      <div className="relative flex flex-col items-center justify-center mt-12 pb-24">
         
-        {/* Connection Lines from Pioneers to Legacy Core */}
-        <div className="absolute inset-0 -top-[400px] w-full h-[600px] pointer-events-none z-0">
-          <svg viewBox="0 0 1200 600" className="w-full h-full overflow-visible">
-            {[150, 450, 750, 1050].map((x, i) => (
-              <motion.path
-                key={`legacy-line-${i}`}
-                d={`M ${x},0 C ${x},200 600,300 600,450`}
-                fill="none"
-                stroke="white"
-                strokeWidth="0.5"
-                strokeOpacity="0.1"
-                initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 3, delay: 5 }}
-              />
-            ))}
+        {/* Connection to Legacy */}
+        <div className="absolute inset-0 -top-[100px] w-full h-[200px] pointer-events-none z-0">
+          <svg viewBox="0 0 1200 200" className="w-full h-full overflow-visible">
+            <motion.path
+              d="M 600,0 C 600,50 600,100 600,150"
+              fill="none"
+              stroke="white"
+              strokeWidth="0.5"
+              strokeOpacity="0.2"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: viewedIndices.size === 4 ? 1 : 0 }}
+            />
           </svg>
         </div>
 
-        {/* The Legacy Node */}
         <div className="relative flex flex-col items-center z-10">
           <motion.p 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 0.4 }}
-            className="text-[9px] uppercase tracking-[1em] text-white font-bold mb-12 whitespace-nowrap"
+            animate={{ opacity: viewedIndices.size === 4 ? 0.6 : 0.1 }}
+            className="text-[9px] uppercase tracking-[1em] text-white font-bold mb-8 whitespace-nowrap"
           >
             Legacy continues
           </motion.p>
@@ -232,17 +273,16 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
             onMouseEnter={() => setLegacyHovered(true)}
             onMouseLeave={() => setLegacyHovered(false)}
             onClick={handleLegacyClick}
-            className="relative cursor-none flex items-center justify-center group"
+            className={`relative flex items-center justify-center group ${viewedIndices.size === 4 ? 'cursor-none' : 'cursor-not-allowed opacity-20'}`}
           >
-            {/* Atmospheric Rings */}
             <AnimatePresence>
-              {(legacyHovered || isTransitioning) && (
+              {(legacyHovered || isTransitioning) && viewedIndices.size === 4 && (
                 <>
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1.5, opacity: 0.15 }}
+                    animate={{ scale: 1.5, opacity: 0.2 }}
                     exit={{ scale: 0, opacity: 0 }}
-                    className="absolute w-48 h-48 rounded-full bg-primary blur-[40px]"
+                    className="absolute w-32 h-32 rounded-full bg-primary blur-[40px]"
                   />
                   {[1, 2].map((i) => (
                     <motion.div
@@ -250,67 +290,38 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
                       initial={{ scale: 1, opacity: 0 }}
                       animate={{ scale: 2.5, opacity: 0 }}
                       transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                      className="absolute w-24 h-24 border border-white/20 rounded-full"
+                      className="absolute w-16 h-16 border border-white/20 rounded-full"
                     />
                   ))}
                 </>
               )}
             </AnimatePresence>
 
-            {/* Core Orb */}
             <motion.div
               animate={{
-                scale: isTransitioning ? [1, 15, 1] : (legacyHovered ? [1, 1.2, 1] : [1, 1.1, 1]),
+                scale: isTransitioning ? [1, 20, 1] : (legacyHovered ? 1.4 : 1),
                 opacity: isTransitioning ? [1, 0, 0] : 1,
-                boxShadow: legacyHovered 
+                backgroundColor: viewedIndices.size === 4 ? "#fff" : "#333",
+                boxShadow: legacyHovered && viewedIndices.size === 4
                   ? "0 0 40px rgba(139, 92, 246, 0.8)" 
-                  : "0 0 20px rgba(255, 255, 255, 0.2)"
+                  : "0 0 10px rgba(255, 255, 255, 0.1)"
               }}
-              transition={{ duration: isTransitioning ? 2 : 3, repeat: isTransitioning ? 0 : Infinity }}
-              className={`w-4 h-4 rounded-full bg-white relative z-20 ${isTransitioning ? 'pointer-events-none' : ''}`}
+              transition={{ duration: isTransitioning ? 1.5 : 0.5 }}
+              className={`w-4 h-4 rounded-full relative z-20`}
             />
-
-            {/* Transition Burst Particles */}
-            <AnimatePresence>
-              {isTransitioning && (
-                <motion.div className="absolute z-30">
-                  {[...Array(12)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ scale: 1, x: 0, y: 0, opacity: 1 }}
-                      animate={{ 
-                        x: (Math.random() - 0.5) * 400, 
-                        y: 800, 
-                        scale: 0,
-                        opacity: 0 
-                      }}
-                      transition={{ duration: 2, ease: "easeOut" }}
-                      className="absolute w-1 h-1 bg-white rounded-full blur-[1px]"
-                    />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
 
           <motion.p 
             animate={{ 
-              opacity: legacyHovered ? 1 : 0.3,
-              y: legacyHovered ? [0, 5, 0] : 0
+              opacity: legacyHovered && viewedIndices.size === 4 ? 1 : 0.2,
+              y: legacyHovered ? 5 : 0
             }}
-            className="text-[8px] uppercase tracking-[0.6em] text-white font-medium mt-12 transition-all duration-700"
+            className="text-[8px] uppercase tracking-[0.6em] text-white font-medium mt-8 transition-all duration-700"
           >
-            {isTransitioning ? "Traveling through history..." : "Click to follow the constellation"}
+            {isTransitioning ? "Traveling through history..." : (viewedIndices.size === 4 ? "Click to follow the constellation" : "Explore all pioneers to continue")}
           </motion.p>
         </div>
       </div>
-
-      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="mt-64 text-center relative z-10">
-        <p className="text-[10px] uppercase tracking-[0.8em] text-white/20 italic max-w-sm mx-auto">
-          Innovation is not a single mind.<br />
-          It is a constellation of pioneers.
-        </p>
-      </motion.div>
     </div>
   );
 };
