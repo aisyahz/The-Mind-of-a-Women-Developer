@@ -16,7 +16,7 @@ const WOMEN_FIGURES = [
     nodeSource: "Creativity",
     heroNodeId: "creativity",
     bgLabel: "Analytical Engine",
-    targetX: 150 // Matches LINEAGE_TARGETS in hero
+    targetX: 150
   },
   {
     id: "grace",
@@ -91,56 +91,51 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
   }, [activeIndex, currentWoman.heroNodeId, onPioneerHover]);
 
   return (
-    <div id="gallery-section" className="relative py-32 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
+    <div id="gallery-section" className="relative py-24 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
-      {/* ANCESTRY NETWORK: Receiving hero lineage threads */}
-      <div className="absolute inset-x-0 top-0 h-[800px] pointer-events-none opacity-50">
+      <div className="absolute inset-x-0 top-0 h-[600px] pointer-events-none opacity-40">
         <svg viewBox="0 0 900 800" className="w-full h-full overflow-visible" preserveAspectRatio="xMidYTop">
           {WOMEN_FIGURES.map((woman, idx) => {
-            // Pick up from the targetX established in hero
             const incomingX = woman.targetX; 
-            const targetX = 450 + (Math.sin(idx * 2) * 350);
-            const targetY = 350 + (Math.cos(idx * 2) * 150);
+            const targetX = 450 + (Math.sin(idx * 2) * 300);
+            const targetY = 300 + (Math.cos(idx * 2) * 120);
             return (
               <motion.g key={`ancestry-${woman.id}`}>
-                {/* Lineage bridge: From the top edge to a historical anchor */}
                 <motion.path
-                  d={`M ${incomingX},-200 C ${incomingX},200 ${targetX},100 ${targetX},${targetY}`}
+                  d={`M ${incomingX},-200 C ${incomingX},150 ${targetX},80 ${targetX},${targetY}`}
                   fill="none"
                   stroke={woman.color}
-                  strokeWidth="2"
-                  strokeOpacity="0.6"
+                  strokeWidth="1.5"
+                  strokeOpacity="0.5"
                   initial={{ pathLength: 0 }}
                   whileInView={{ pathLength: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 6, delay: idx * 0.8, ease: "easeInOut" }}
+                  transition={{ duration: 5, delay: idx * 0.6, ease: "easeInOut" }}
                 />
                 
-                {/* Ignition Spark: Fires when lineage reaches the anchor */}
                 <motion.circle
-                  cx={targetX} cy={targetY} r="4"
+                  cx={targetX} cy={targetY} r="3"
                   fill={woman.color}
                   initial={{ scale: 0, opacity: 0 }}
-                  whileInView={{ scale: [0, 2.5, 1], opacity: 1 }}
+                  whileInView={{ scale: [0, 2, 1], opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 5.5 + (idx * 0.8), duration: 1.5 }}
+                  transition={{ delay: 4.5 + (idx * 0.6), duration: 1.2 }}
                   className="glow-md"
                 />
 
-                {/* Descending pulses for continuous flow */}
                 <motion.circle
-                  r="3"
+                  r="2"
                   fill="white"
                   initial={{ opacity: 0 }}
-                  whileInView={{ opacity: [0, 1, 0] }}
+                  whileInView={{ opacity: [0, 0.8, 0] }}
                   animate={{
                     cx: [incomingX, targetX],
                     cy: [-200, targetY],
                   }}
                   transition={{
-                    duration: 10,
+                    duration: 8,
                     repeat: Infinity,
-                    delay: 2 + idx * 2,
+                    delay: 2 + idx * 1.5,
                     ease: "linear"
                   }}
                 />
@@ -150,19 +145,18 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
         </svg>
       </div>
 
-      {/* Section Header */}
       <motion.div 
-        initial={{ opacity: 0, y: 40 }}
+        initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 2 }}
-        className="text-center mb-24 relative z-10"
+        transition={{ duration: 1.5 }}
+        className="text-center mb-20 relative z-10"
       >
-        <div className="space-y-6 mb-16">
-          <p className="text-[14px] uppercase tracking-[1.8em] text-white/25 font-bold">
+        <div className="space-y-4 mb-12">
+          <p className="text-[12px] uppercase tracking-[1.2em] text-white/25 font-bold">
             THE CONSTELLATION THAT CAME BEFORE US
           </p>
-          <h2 className="text-5xl md:text-9xl font-bold text-white tracking-tighter italic uppercase leading-none">
+          <h2 className="text-4xl md:text-7xl font-bold text-white tracking-tighter italic uppercase leading-none">
             Women Who <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-violet-500 to-rose-500">
               Shaped the Code
@@ -171,14 +165,13 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[12px] uppercase tracking-[0.8em] text-primary/60 font-black"
+            className="text-[10px] uppercase tracking-[0.6em] text-primary/60 font-black"
           >
             {allViewed ? "Lineage Discovered" : `Connecting ${viewedIndices.size}/${WOMEN_FIGURES.length} Pioneer Nodes`}
           </motion.div>
         </div>
 
-        {/* Pioneer Navigation Orbs (The anchors of the transition) */}
-        <div className="flex justify-center gap-14 md:gap-24 relative">
+        <div className="flex justify-center gap-12 md:gap-20 relative">
           {WOMEN_FIGURES.map((woman, idx) => {
             const isViewed = viewedIndices.has(idx);
             return (
@@ -189,18 +182,18 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
               >
                 <motion.div
                   animate={{
-                    scale: activeIndex === idx ? 2.2 : (isViewed ? 1.4 : [1, 1.4, 1]),
-                    backgroundColor: activeIndex === idx ? woman.color : (isViewed ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.2)"),
+                    scale: activeIndex === idx ? 1.8 : (isViewed ? 1.2 : [1, 1.2, 1]),
+                    backgroundColor: activeIndex === idx ? woman.color : (isViewed ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.15)"),
                     boxShadow: activeIndex === idx 
-                      ? `0 0 45px ${woman.color}` 
-                      : (isViewed ? "0 0 0px transparent" : `0 0 20px ${woman.color}88`)
+                      ? `0 0 35px ${woman.color}` 
+                      : (isViewed ? "0 0 0px transparent" : `0 0 15px ${woman.color}66`)
                   }}
                   transition={{ 
-                    duration: isViewed ? 0.6 : 3, 
+                    duration: isViewed ? 0.5 : 2.5, 
                     repeat: isViewed ? 0 : Infinity,
                     ease: "easeInOut"
                   }}
-                  className="w-5 h-5 rounded-full transition-colors duration-600"
+                  className="w-4 h-4 rounded-full transition-colors duration-600"
                 />
                 
                 <AnimatePresence>
@@ -208,112 +201,94 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
                     <motion.div
                       layoutId="orb-ring"
                       initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 0.5, scale: 3.5 }}
+                      animate={{ opacity: 0.4, scale: 3 }}
                       exit={{ opacity: 0, scale: 0.5 }}
-                      className="absolute inset-0 rounded-full border-2 border-white/50"
-                      transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+                      className="absolute inset-0 rounded-full border-2 border-white/40"
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
                     />
                   )}
                 </AnimatePresence>
 
-                {!isViewed && (
-                   <motion.div 
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: [0, 0.5, 0] }}
-                     transition={{ duration: 4, repeat: Infinity }}
-                     className="absolute -top-1 w-8 h-8 border border-white/30 rounded-full"
-                   />
-                )}
-
                 <motion.span 
-                  animate={{ opacity: activeIndex === idx ? 1 : 0.45 }}
-                  className="absolute top-12 text-[11px] uppercase tracking-[0.5em] text-white font-black whitespace-nowrap"
+                  animate={{ opacity: activeIndex === idx ? 1 : 0.4 }}
+                  className="absolute top-10 text-[10px] uppercase tracking-[0.4em] text-white font-black whitespace-nowrap"
                 >
                   {woman.name.split(' ')[0]}
                 </motion.span>
               </button>
             );
           })}
-          <div className="absolute top-2.5 left-0 right-0 h-[1px] bg-white/10 -z-10" />
+          <div className="absolute top-2 left-0 right-0 h-[1px] bg-white/10 -z-10" />
         </div>
       </motion.div>
 
-      {/* Active Pioneer Portrait & Narrative */}
-      <div className="relative w-full max-w-6xl h-[700px] flex items-center justify-center z-10">
+      <div className="relative w-full max-w-5xl h-[600px] flex items-center justify-center z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentWoman.id}
-            initial={{ opacity: 0, scale: 0.9, filter: 'blur(30px)', x: 80 }}
+            initial={{ opacity: 0, scale: 0.95, filter: 'blur(20px)', x: 60 }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', x: 0 }}
-            exit={{ opacity: 0, scale: 1.1, filter: 'blur(30px)', x: -80 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex flex-col md:flex-row items-center gap-20 md:gap-32"
+            exit={{ opacity: 0, scale: 1.05, filter: 'blur(20px)', x: -60 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="relative flex flex-col md:flex-row items-center gap-16 md:gap-24"
           >
-            {/* Portrait Node (Cinematic lighting) */}
             <div className="relative">
               <motion.div
-                animate={{ opacity: [0.4, 0.7, 0.4], scale: [1, 1.3, 1] }}
+                animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.2, 1] }}
                 transition={{ duration: 5, repeat: Infinity }}
-                className="absolute inset-0 rounded-full blur-[90px]"
+                className="absolute inset-0 rounded-full blur-[70px]"
                 style={{ backgroundColor: currentWoman.color }}
               />
               
-              <div className="relative w-80 h-[500px]">
+              <div className="relative w-64 h-[400px]">
                 <Image 
                   src={currentWoman.image} 
                   alt={currentWoman.name} 
                   fill 
-                  className="object-contain filter grayscale brightness-75 hover:grayscale-0 transition-all duration-1200"
+                  className="object-contain filter grayscale brightness-75 transition-all duration-1000"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-70" />
               </div>
 
-              {[...Array(5)].map((_, i) => (
+              {[...Array(3)].map((_, i) => (
                 <motion.div
                   key={`orbit-${i}`}
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 15 + i * 8, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 12 + i * 6, repeat: Infinity, ease: "linear" }}
                   className="absolute inset-0 pointer-events-none"
                 >
                   <div 
-                    className="absolute w-2 h-2 bg-white rounded-full"
+                    className="absolute w-1.5 h-1.5 bg-white rounded-full"
                     style={{ 
                       top: '50%', 
                       left: '50%', 
-                      transform: `translate(${200 + i * 35}px, -50%)`,
-                      boxShadow: '0 0 20px white' 
+                      transform: `translate(${160 + i * 25}px, -50%)`,
+                      boxShadow: '0 0 15px white' 
                     }}
                   />
                 </motion.div>
               ))}
-              
-              <motion.div 
-                animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.35, 0.15] }}
-                transition={{ duration: 4.5, repeat: Infinity }}
-                className="absolute -inset-16 border border-white/20 rounded-full pointer-events-none"
-              />
             </div>
 
-            {/* Narrative Content */}
-            <div className="max-w-xl text-center md:text-left space-y-12">
-              <div className="space-y-4">
-                <p className="text-[14px] uppercase tracking-[1.2em] text-white/40 font-black">
+            <div className="max-w-md text-center md:text-left space-y-8">
+              <div className="space-y-3">
+                <p className="text-[12px] uppercase tracking-[1em] text-white/40 font-black">
                   {currentWoman.nodeSource} Lineage
                 </p>
-                <h3 className="text-5xl md:text-8xl font-bold text-white tracking-tighter uppercase italic leading-tight">
+                <h3 className="text-4xl md:text-6xl font-bold text-white tracking-tighter uppercase italic leading-tight">
                   {currentWoman.name}
                 </h3>
               </div>
-              <p className="text-base md:text-lg text-white/70 leading-relaxed tracking-widest font-light">
+              <p className="text-sm md:text-base text-white/70 leading-relaxed tracking-wider font-light">
                 {currentWoman.caption}
               </p>
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="pt-10 border-t border-white/20"
+                transition={{ delay: 0.6 }}
+                className="pt-8 border-t border-white/15"
               >
-                 <p className="text-lg md:text-2xl italic text-white/90 glow-sm font-light leading-relaxed">
+                 <p className="text-base md:text-xl italic text-white/90 glow-sm font-light leading-relaxed">
                    "{currentWoman.quote}"
                  </p>
               </motion.div>
@@ -322,55 +297,38 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
         </AnimatePresence>
       </div>
 
-      {/* Legacy Gateway (The Warp to the Finale) */}
-      <div className="relative flex flex-col items-center justify-center mt-48 pb-64">
+      <div className="relative flex flex-col items-center justify-center mt-32 pb-48">
         
-        {/* Converging Lineage to Core */}
-        <div className="absolute inset-0 -top-[500px] w-full h-[1000px] pointer-events-none z-0">
+        <div className="absolute inset-0 -top-[400px] w-full h-[800px] pointer-events-none z-0">
           <svg viewBox="0 0 1200 1000" className="w-full h-full overflow-visible">
             {WOMEN_FIGURES.map((woman, idx) => (
               <motion.path
                 key={`converge-${woman.id}`}
-                d={`M ${150 + (idx * 300)},0 C ${150 + (idx * 300)},400 600,400 600,750`}
+                d={`M ${150 + (idx * 300)},0 C ${150 + (idx * 300)},350 600,350 600,700`}
                 fill="none"
                 stroke={woman.color}
-                strokeWidth="1.5"
+                strokeWidth="1.2"
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ 
                   pathLength: viewedIndices.has(idx) ? 1 : 0, 
-                  opacity: isTransitioning ? [0.5, 1, 0] : (viewedIndices.has(idx) ? 0.4 : 0)
+                  opacity: isTransitioning ? [0.4, 1, 0] : (viewedIndices.has(idx) ? 0.3 : 0)
                 }}
                 transition={{ 
-                  duration: isTransitioning ? 1.8 : 4, 
-                  ease: "easeInOut",
-                  opacity: isTransitioning ? { duration: 2.5, times: [0, 0.5, 1] } : {}
+                  duration: isTransitioning ? 1.5 : 3.5, 
+                  ease: "easeInOut"
                 }}
               />
             ))}
-            
-            <AnimatePresence>
-              {isTransitioning && (
-                <motion.path
-                  d="M 600,750 L 600,2000"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="5"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: [0, 1, 0.5] }}
-                  transition={{ duration: 5, ease: "easeInOut" }}
-                />
-              )}
-            </AnimatePresence>
           </svg>
         </div>
 
         <div className="relative flex flex-col items-center z-10">
           <motion.p 
             animate={{ 
-              opacity: allViewed ? (legacyHovered ? 1 : 0.7) : 0.25,
-              filter: allViewed ? 'blur(0px)' : 'blur(2px)'
+              opacity: allViewed ? (legacyHovered ? 1 : 0.6) : 0.2,
+              filter: allViewed ? 'blur(0px)' : 'blur(1px)'
             }}
-            className="text-[14px] uppercase tracking-[1.8em] text-white font-black mb-16 whitespace-nowrap glow-sm"
+            className="text-[12px] uppercase tracking-[1.5em] text-white font-black mb-12 whitespace-nowrap glow-sm"
           >
             {allViewed ? "The Bridge to the Future" : "Legacy Awaiting Activation"}
           </motion.p>
@@ -381,102 +339,50 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
             onClick={handleLegacyClick}
             className={`relative flex items-center justify-center group ${allViewed ? 'cursor-none' : 'cursor-default'}`}
           >
-            {/* Halo Expansion Event */}
             <AnimatePresence>
               {(legacyHovered || isTransitioning) && allViewed && (
                 <>
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: isTransitioning ? 35 : 3, opacity: isTransitioning ? 0 : 0.5 }}
+                    animate={{ scale: isTransitioning ? 30 : 2.5, opacity: isTransitioning ? 0 : 0.4 }}
                     exit={{ scale: 0, opacity: 0 }}
-                    className="absolute w-48 h-48 rounded-full bg-primary blur-[70px]"
-                    transition={{ duration: isTransitioning ? 2.5 : 0.8 }}
+                    className="absolute w-40 h-40 rounded-full bg-primary blur-[60px]"
+                    transition={{ duration: isTransitioning ? 2 : 0.7 }}
                   />
-                  {[1, 2, 3, 4].map((i) => (
-                    <motion.div
-                      key={`ring-${i}`}
-                      initial={{ scale: 1, opacity: 0 }}
-                      animate={{ 
-                        scale: isTransitioning ? 5 : (legacyHovered ? 4 : 2.5), 
-                        opacity: isTransitioning ? 0 : [0, 0.4, 0] 
-                      }}
-                      transition={{ 
-                        duration: isTransitioning ? 1.5 : 4, 
-                        repeat: isTransitioning ? 0 : Infinity, 
-                        delay: i * 0.6 
-                      }}
-                      className="absolute w-32 h-32 border-2 border-white/30 rounded-full"
-                    />
-                  ))}
                 </>
               )}
             </AnimatePresence>
 
-            {/* Legacy Core Node */}
             <motion.div
               animate={{
-                scale: isTransitioning ? [1, 4, 0.8] : (allViewed ? (legacyHovered ? 1.8 : 1.2) : 1),
-                opacity: isTransitioning ? [1, 1, 0] : (allViewed ? 1 : 0.4),
-                backgroundColor: allViewed ? "#fff" : "rgba(255,255,255,0.2)",
+                scale: isTransitioning ? [1, 3.5, 0.8] : (allViewed ? (legacyHovered ? 1.6 : 1.1) : 1),
+                opacity: isTransitioning ? [1, 1, 0] : (allViewed ? 1 : 0.35),
+                backgroundColor: allViewed ? "#fff" : "rgba(255,255,255,0.15)",
                 boxShadow: legacyHovered && allViewed
-                  ? "0 0 100px rgba(255, 255, 255, 1), 0 0 150px rgba(139, 92, 246, 1)" 
-                  : "0 0 30px rgba(255, 255, 255, 0.3)"
+                  ? "0 0 80px rgba(255, 255, 255, 1), 0 0 120px rgba(139, 92, 246, 0.8)" 
+                  : "0 0 20px rgba(255, 255, 255, 0.2)"
               }}
-              transition={{ duration: isTransitioning ? 3 : 0.8, ease: "easeInOut" }}
-              className={`w-8 h-8 rounded-full relative z-20 border-2 ${allViewed ? 'border-transparent' : 'border-white/30'}`}
+              transition={{ duration: isTransitioning ? 2.5 : 0.7, ease: "easeInOut" }}
+              className={`w-7 h-7 rounded-full relative z-20 border-2 ${allViewed ? 'border-transparent' : 'border-white/20'}`}
             />
-
-            {/* Discovery Orbitals */}
-            {legacyHovered && allViewed && !isTransitioning && (
-              <div className="absolute inset-0 pointer-events-none">
-                {[...Array(10)].map((_, i) => (
-                  <motion.div
-                    key={`p-orbit-${i}`}
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 3.5, repeat: Infinity, ease: "linear", delay: i * 0.4 }}
-                    className="absolute inset-0"
-                  >
-                    <div 
-                      className="absolute w-2 h-2 bg-white rounded-full blur-[0.6px]"
-                      style={{ 
-                        top: '50%', 
-                        left: '50%', 
-                        transform: `translate(${55}px, -50%)`,
-                        boxShadow: '0 0 15px white' 
-                      }}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            )}
           </motion.div>
 
-          {/* Gateway Subtext */}
           <motion.div 
             animate={{ 
-              opacity: allViewed ? (legacyHovered ? 1 : 0.6) : 0.3,
-              y: legacyHovered ? 15 : 0
+              opacity: allViewed ? (legacyHovered ? 1 : 0.5) : 0.25,
+              y: legacyHovered ? 12 : 0
             }}
-            className="text-center mt-20 space-y-6"
+            className="text-center mt-16 space-y-4"
           >
-            <p className="text-[12px] md:text-[14px] uppercase tracking-[1em] text-white font-black transition-all duration-800">
+            <p className="text-[11px] md:text-[12px] uppercase tracking-[0.8em] text-white font-black transition-all duration-800">
               {isTransitioning 
-                ? "Connecting history to your potential..." 
+                ? "Connecting history..." 
                 : (allViewed 
-                    ? "Step into the living continuation" 
-                    : `Observe ${WOMEN_FIGURES.length - viewedIndices.size} more pioneers to stabilize the bridge`
+                    ? "Step into the continuation" 
+                    : `Observe ${WOMEN_FIGURES.length - viewedIndices.size} more pioneers`
                   )
               }
             </p>
-            {allViewed && !isTransitioning && (
-               <motion.div 
-                 animate={{ y: [0, 10, 0] }} 
-                 transition={{ repeat: Infinity, duration: 3 }}
-                 className="flex justify-center"
-               >
-                 <div className="w-[2px] h-14 bg-gradient-to-b from-white to-transparent" />
-               </motion.div>
-            )}
           </motion.div>
         </div>
       </div>
