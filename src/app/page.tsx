@@ -11,6 +11,23 @@ export default function Home() {
   const [isExplored, setIsExplored] = useState(false);
   const [isStarHovered, setIsStarHovered] = useState(false);
 
+  // Character staggered animation variants
+  const charVariants = {
+    hidden: { opacity: 0, y: 10, filter: 'blur(8px)' },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      filter: 'blur(0px)',
+      transition: {
+        delay: 0.8 + i * 0.04,
+        duration: 0.8,
+        ease: [0.2, 0.65, 0.3, 0.9],
+      },
+    }),
+  };
+
+  const finalMessage = "Maybe the next star is you.";
+
   return (
     <main className={`relative min-h-screen w-full bg-[#050508] flex flex-col items-center ${!isExplored ? 'overflow-hidden h-screen' : 'overflow-x-hidden'}`}>
       {/* Pinned Background Layer */}
@@ -74,11 +91,11 @@ export default function Home() {
             </section>
 
             {/* Poetic Ending Section */}
-            <section className="relative w-full py-48 flex flex-col items-center justify-center z-20 bg-transparent overflow-hidden">
+            <section className="relative w-full py-64 flex flex-col items-center justify-center z-20 bg-transparent overflow-hidden">
               <div className="text-center space-y-12 max-w-2xl px-6 relative">
                 
                 {/* Visual Echo: Forming Nodes */}
-                <div className="flex justify-center gap-6 mb-16">
+                <div className="flex justify-center gap-6 mb-24">
                   {[0, 1, 2].map((i) => (
                     <motion.div 
                       key={i} 
@@ -93,7 +110,7 @@ export default function Home() {
                 <motion.div
                   initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
                   whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  transition={{ duration: 2, ease: "easeOut" }}
                 >
                   <h2 className="text-4xl md:text-7xl font-bold text-white tracking-tighter uppercase italic leading-none">
                     The Constellation <br />
@@ -106,22 +123,30 @@ export default function Home() {
                 <motion.p 
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
-                  transition={{ delay: 1, duration: 2 }}
+                  transition={{ delay: 1.2, duration: 2 }}
                   className="text-[10px] md:text-xs uppercase tracking-[1.5em] text-white/30 font-medium leading-loose pt-8"
                 >
                   Every line of code <br className="md:hidden" /> writes the future.
                 </motion.p>
 
-                {/* The Interactive Next Star: Inspirational Climax */}
-                <div className="pt-48 relative flex flex-col items-center">
+                {/* THE MIND-BLOWN CLIMAX */}
+                <div className="pt-64 relative flex flex-col items-center">
                    
-                   {/* Connection Path: Leading to the user */}
+                   {/* Divine Connection Path: The "Arrow" that leads to the final star */}
                    <motion.div 
-                     initial={{ height: 0 }}
-                     whileInView={{ height: 160 }}
-                     transition={{ duration: 3, ease: "easeInOut" }}
-                     className="absolute -top-12 left-1/2 -translate-x-1/2 w-[1px] bg-gradient-to-b from-primary/0 via-primary/20 to-transparent"
-                   />
+                     initial={{ height: 0, opacity: 0 }}
+                     whileInView={{ height: 280, opacity: 1 }}
+                     transition={{ duration: 4, ease: [0.16, 1, 0.3, 1] }}
+                     className="absolute -top-24 left-1/2 -translate-x-1/2 w-[2px] z-0 overflow-hidden"
+                   >
+                     <div className="w-full h-full bg-gradient-to-b from-primary/0 via-primary/40 to-white/60" />
+                     {/* Bouncing Pulse within the arrow path */}
+                     <motion.div
+                       animate={{ y: [0, 280] }}
+                       transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                       className="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-transparent via-white/80 to-transparent"
+                     />
+                   </motion.div>
 
                    <motion.div
                     onMouseEnter={() => setIsStarHovered(true)}
@@ -130,52 +155,88 @@ export default function Home() {
                     initial={{ scale: 0, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.5, duration: 2 }}
+                    transition={{ delay: 1, duration: 2.5, ease: "easeOut" }}
                    >
-                     {/* Pulsing Core */}
+                     {/* Supernova Atmospheric Expanders (Visible on Hover) */}
+                     <AnimatePresence>
+                       {isStarHovered && (
+                         <>
+                           <motion.div
+                             initial={{ scale: 0, opacity: 0 }}
+                             animate={{ scale: 15, opacity: 0.1 }}
+                             exit={{ scale: 0, opacity: 0 }}
+                             transition={{ duration: 1.5, ease: "easeOut" }}
+                             className="absolute inset-0 -m-10 rounded-full bg-primary/20 blur-[100px] pointer-events-none"
+                           />
+                           <motion.div
+                             initial={{ scale: 0, opacity: 0 }}
+                             animate={{ scale: 8, opacity: 0.15 }}
+                             exit={{ scale: 0, opacity: 0 }}
+                             transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
+                             className="absolute inset-0 -m-10 rounded-full bg-white/10 blur-[60px] pointer-events-none"
+                           />
+                         </>
+                       )}
+                     </AnimatePresence>
+
+                     {/* Pulsing Core Star */}
                      <motion.div
                        animate={{ 
-                         scale: [1, 1.5, 1],
-                         opacity: [0.6, 1, 0.6],
-                         boxShadow: [
-                           "0 0 15px rgba(255, 255, 255, 0.3)",
-                           "0 0 40px rgba(139, 92, 246, 0.7)",
-                           "0 0 15px rgba(255, 255, 255, 0.3)"
-                         ]
+                         scale: isStarHovered ? [1.2, 1.4, 1.2] : [1, 1.3, 1],
+                         opacity: isStarHovered ? 1 : [0.6, 1, 0.6],
+                         boxShadow: isStarHovered 
+                           ? "0 0 60px rgba(255, 255, 255, 0.9), 0 0 100px rgba(139, 92, 246, 0.8)"
+                           : [
+                             "0 0 15px rgba(255, 255, 255, 0.3)",
+                             "0 0 40px rgba(139, 92, 246, 0.7)",
+                             "0 0 15px rgba(255, 255, 255, 0.3)"
+                           ]
                        }}
                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                       className="w-3 h-3 bg-white rounded-full relative z-10"
+                       className="w-4 h-4 bg-white rounded-full relative z-10"
                      />
                      
                      {/* External Atmospheric Rings */}
                      <motion.div
-                        animate={{ scale: [1, 3, 1], opacity: [0.2, 0, 0.2] }}
+                        animate={{ scale: isStarHovered ? [1, 6, 1] : [1, 3, 1], opacity: [0.2, 0, 0.2] }}
                         transition={{ duration: 5, repeat: Infinity }}
-                        className="absolute inset-0 -m-3 rounded-full border border-white/10"
+                        className="absolute inset-0 -m-4 rounded-full border border-white/20"
                      />
                      <motion.div
-                        animate={{ scale: [1, 2, 1], opacity: [0.1, 0, 0.1] }}
+                        animate={{ scale: isStarHovered ? [1, 4, 1] : [1, 2, 1], opacity: [0.1, 0, 0.1] }}
                         transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                        className="absolute inset-0 -m-1 rounded-full border border-primary/20"
+                        className="absolute inset-0 -m-2 rounded-full border border-primary/30"
                      />
 
-                     {/* Tooltip Message: The Reveal */}
+                     {/* The "Mindblown" Text Reveal */}
                      <AnimatePresence>
                        {isStarHovered && (
                          <motion.div
-                           initial={{ opacity: 0, y: 20, filter: 'blur(10px)', scale: 0.95 }}
-                           animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
-                           exit={{ opacity: 0, y: 15, filter: 'blur(10px)' }}
-                           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                           className="absolute top-16 left-1/2 -translate-x-1/2 whitespace-nowrap"
+                           initial={{ opacity: 0, y: 40 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           exit={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+                           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                           className="absolute top-20 left-1/2 -translate-x-1/2 whitespace-nowrap"
                          >
-                           <p className="text-[11px] uppercase tracking-[0.8em] text-white/70 font-bold italic transition-colors duration-700 group-hover:text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                             Maybe the next star is you.
-                           </p>
+                           <div className="flex gap-[0.4em] justify-center">
+                             {finalMessage.split("").map((char, i) => (
+                               <motion.span
+                                 key={i}
+                                 custom={i}
+                                 variants={charVariants}
+                                 initial="hidden"
+                                 animate="visible"
+                                 className="text-[12px] md:text-[14px] uppercase tracking-[0.1em] text-white font-bold italic drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                               >
+                                 {char === " " ? "\u00A0" : char}
+                               </motion.span>
+                             ))}
+                           </div>
                            <motion.div 
                              initial={{ width: 0 }}
                              animate={{ width: "100%" }}
-                             className="h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent mt-2 mx-auto"
+                             transition={{ duration: 1.5, delay: 0.5 }}
+                             className="h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent mt-4 mx-auto"
                            />
                          </motion.div>
                        )}
@@ -185,13 +246,13 @@ export default function Home() {
 
                 {/* Ambient Decorative Nodes: Creating the feeling of a new constellation */}
                 <div className="absolute inset-0 pointer-events-none -z-10">
-                  {[...Array(30)].map((_, i) => (
+                  {[...Array(40)].map((_, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0 }}
-                      whileInView={{ opacity: [0, 0.05, 0] }}
+                      whileInView={{ opacity: [0, 0.08, 0] }}
                       transition={{ 
-                        duration: 4 + Math.random() * 4, 
+                        duration: 5 + Math.random() * 5, 
                         repeat: Infinity, 
                         delay: Math.random() * 10 
                       }}
@@ -205,8 +266,20 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Bottom Horizon Gradient */}
-              <div className="absolute bottom-0 left-0 w-full h-96 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none" />
+              {/* Bottom Horizon Gradient: A sense of a new dawn */}
+              <div className="absolute bottom-0 left-0 w-full h-[50vh] bg-gradient-to-t from-primary/10 via-transparent to-transparent pointer-events-none" />
+              
+              {/* Divine Arrow Guidance (Points to the user node from above) */}
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                whileInView={{ opacity: [0, 0.5, 0], y: [0, 15, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-48 left-1/2 -translate-x-1/2 pointer-events-none"
+              >
+                <svg width="24" height="48" viewBox="0 0 24 48" fill="none">
+                  <path d="M12 0V40M12 40L6 34M12 40L18 34" stroke="white" strokeWidth="0.5" strokeOpacity="0.5" />
+                </svg>
+              </motion.div>
             </section>
           </motion.div>
         )}
@@ -214,4 +287,3 @@ export default function Home() {
     </main>
   );
 }
-
