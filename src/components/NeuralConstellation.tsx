@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -100,7 +99,8 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
       <svg 
         viewBox="0 0 800 1000" 
-        className="relative z-10 w-full max-w-6xl h-auto max-h-[95vh] overflow-visible select-none transition-all duration-1000"
+        className="relative z-10 w-full h-full max-h-screen overflow-visible select-none transition-all duration-1000"
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           {NODES.map((node) => (
