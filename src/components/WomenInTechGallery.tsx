@@ -1,100 +1,81 @@
+
 "use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
 const WOMEN_FIGURES = [
   {
+    id: "ada",
     name: "Ada Lovelace",
     image: "https://image2url.com/r2/default/images/1773030196135-abfefd18-0d7a-459e-a0dd-33c332ba03ac.png",
     caption: "Often regarded as the first computer programmer.",
-    quote: "That brain of mine is something more than merely mortal.",
+    quote: "The Analytical Engine weaves algebraic patterns.",
     color: "#a855f7",
     nodeSource: "Creativity",
-    startX: 400,
+    heroNodeId: "creativity",
+    bgLabel: "Analytical Engine"
   },
   {
+    id: "grace",
     name: "Grace Hopper",
     image: "https://image2url.com/r2/default/images/1773030220691-47d33614-a2f1-427a-a6f1-e79dc950c94b.png",
     caption: "Pioneer of modern programming languages and creator of COBOL.",
-    quote: "The most dangerous phrase is: 'We've always done it this way.'",
+    quote: "The most dangerous phrase is 'we've always done it this way.'",
     color: "#3b82f6",
     nodeSource: "Logic",
-    startX: 520,
+    heroNodeId: "logic",
+    bgLabel: "COBOL"
   },
   {
+    id: "margaret",
     name: "Margaret Hamilton",
     image: "https://image2url.com/r2/default/images/1773030464884-ba20030d-6257-4673-9177-be1d42cf2029.png",
     caption: "Led the development of the Apollo guidance software.",
     quote: "There was no choice but to be pioneers.",
     color: "#f43f5e",
     nodeSource: "Empathy",
-    startX: 300,
+    heroNodeId: "empathy",
+    bgLabel: "Apollo Guidance"
   },
   {
+    id: "radia",
     name: "Radia Perlman",
     image: "https://image2url.com/r2/default/images/1773030535115-f2041c60-0d97-4275-bf7b-315f5bd4b94f.png",
     caption: "Invented key networking protocols fundamental to the modern internet.",
-    quote: "I don't like complexity. I like things that are simple.",
+    quote: "If you think technology solves problems, think again.",
     color: "#22d3ee",
     nodeSource: "Collaboration",
-    startX: 560,
+    heroNodeId: "collaboration",
+    bgLabel: "Spanning Tree Protocol"
   }
 ];
 
-const OrbitingParticles = ({ color }: { color: string }) => {
-  return (
-    <div className="absolute inset-0 pointer-events-none">
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 rounded-full"
-          style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
-          animate={{
-            rotate: 360,
-            x: [Math.cos(i) * 120, Math.cos(i + 2 * Math.PI) * 120],
-            y: [Math.sin(i) * 120, Math.sin(i + 2 * Math.PI) * 120],
-          }}
-          transition={{
-            duration: 10 + i * 2,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+interface WomenInTechGalleryProps {
+  onPioneerHover: (heroNodeId: string | null) => void;
+}
 
-export const WomenInTechGallery: React.FC = () => {
+export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPioneerHover }) => {
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
   return (
-    <div id="gallery-section" className="relative py-32 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
+    <div id="gallery-section" className="relative py-48 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
-      {/* Constellation Bridge Lines (Background Connections) */}
+      {/* Background Labels & Atmosphere */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
-        <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
-          {WOMEN_FIGURES.map((woman, idx) => {
-            if (idx === WOMEN_FIGURES.length - 1) return null;
-            // Choreographed timing: Line appears after current woman and before next woman
-            const lineDelay = 1.2 + idx * 1.5; 
-            return (
-              <motion.line
-                key={`bridge-${idx}`}
-                x1={150 + (idx * 300)}
-                y1={400}
-                x2={150 + ((idx + 1) * 300)}
-                y2={400}
-                stroke="white"
-                strokeWidth="0.5"
-                strokeDasharray="4 8"
-                initial={{ pathLength: 0, opacity: 0 }}
-                whileInView={{ pathLength: 1, opacity: 0.3 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 1.5, delay: lineDelay, ease: "easeInOut" }}
-              />
-            );
-          })}
+        <svg viewBox="0 0 1200 800" className="w-full h-full">
+          {WOMEN_FIGURES.map((woman, idx) => (
+            <motion.g key={`bg-label-${idx}`}>
+              <text
+                x={150 + (idx * 300)} y={600 + (Math.sin(idx) * 50)}
+                fill="white" fontSize="8" className="uppercase tracking-[0.5em] font-light opacity-30 italic"
+              >
+                {woman.bgLabel}
+              </text>
+              <circle cx={150 + (idx * 300)} cy={600 + (Math.sin(idx) * 50)} r="1" fill="white" className="opacity-20" />
+            </motion.g>
+          ))}
         </svg>
       </div>
 
@@ -107,7 +88,7 @@ export const WomenInTechGallery: React.FC = () => {
         className="text-center mb-48 relative z-10"
       >
         <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-6 font-medium">
-          The constellation that came before us.
+          THE CONSTELLATION THAT CAME BEFORE US
         </p>
         <h2 className="text-5xl md:text-8xl font-bold text-white tracking-tighter italic uppercase leading-none">
           Women Who <br />
@@ -117,30 +98,56 @@ export const WomenInTechGallery: React.FC = () => {
         </h2>
       </motion.div>
 
+      {/* Legacy Core Node */}
+      <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-0">
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="w-96 h-96 rounded-full bg-white/5 blur-[100px]"
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_20px_white]"
+          />
+          <span className="absolute mt-8 text-[8px] uppercase tracking-[1em] text-white/20 font-bold whitespace-nowrap">
+            Legacy Core
+          </span>
+        </div>
+      </div>
+
       {/* Figures Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-24 md:gap-12 max-w-7xl w-full px-4 relative z-10">
         {WOMEN_FIGURES.map((woman, idx) => {
-          // Sequential reveal timing
-          const figureDelay = 0.5 + idx * 1.5;
+          const delay = 0.5 + idx * 1.5;
+          const isHovered = hoveredId === woman.id;
 
           return (
-            <div key={woman.name} className="relative flex flex-col items-center">
-              
-              {/* Constellation Node Core (The Star Background) */}
+            <div 
+              key={woman.id} 
+              className="relative flex flex-col items-center"
+              onMouseEnter={() => {
+                setHoveredId(woman.id);
+                onPioneerHover(woman.heroNodeId);
+              }}
+              onMouseLeave={() => {
+                setHoveredId(null);
+                onPioneerHover(null);
+              }}
+            >
+              {/* Star Node Atmosphere */}
               <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 whileInView={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.4] }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 2, delay: figureDelay }}
+                viewport={{ once: true }}
+                transition={{ duration: 2, delay }}
                 className="absolute top-24 w-64 h-64 rounded-full blur-[80px]"
                 style={{ backgroundColor: woman.color }}
               />
 
-              {/* Orbiting Elements */}
+              {/* Orbital Rings */}
               <div className="absolute top-24 w-80 h-80 flex items-center justify-center pointer-events-none">
-                <OrbitingParticles color={woman.color} />
-                
-                {/* Faint Orbit Rings */}
                 {[120, 160].map((radius, i) => (
                   <motion.div
                     key={i}
@@ -152,99 +159,45 @@ export const WomenInTechGallery: React.FC = () => {
                 ))}
               </div>
 
+              {/* Node Portrait Card */}
               <motion.div
                 initial={{ opacity: 0, filter: 'blur(20px)', scale: 0.9, y: 30 }}
-                whileInView={{ 
-                  opacity: 1, 
-                  filter: 'blur(0px)', 
-                  scale: 1, 
-                  y: 0,
-                }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 1.5, delay: figureDelay + 0.2, ease: [0.16, 1, 0.3, 1] }}
+                whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, delay: delay + 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="group relative flex flex-col items-center w-full"
               >
-                {/* Reveal Pulse Effect */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: [0, 0.5, 0], scale: [0.8, 1.5, 2] }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 2, delay: figureDelay }}
-                  className="absolute top-48 w-full h-1 bg-white/20 blur-2xl rounded-full"
-                />
-
                 <div className="relative w-full flex flex-col items-center">
-                  
-                  {/* Portrait - Styled as Node Content */}
-                  <motion.div 
-                    className="relative w-56 h-72 z-10 -mb-10 transition-all duration-700 ease-out group-hover:-translate-y-6"
-                  >
-                    <Image 
-                      src={woman.image}
-                      alt={woman.name}
-                      fill
-                      className="object-contain filter grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 group-hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.08)] transition-all duration-700"
-                      sizes="(max-width: 768px) 100vw, 25vw"
-                    />
+                  <motion.div className="relative w-56 h-72 z-10 transition-all duration-700 ease-out group-hover:-translate-y-6">
+                    <Image src={woman.image} alt={woman.name} fill className="object-contain filter grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 transition-all duration-700" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
                   </motion.div>
 
-                  {/* Pedestal Panel */}
-                  <motion.div 
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 1.0, delay: figureDelay + 0.5 }}
-                    className="relative w-full max-w-[220px] pt-16 pb-12 px-6 flex flex-col items-center justify-center overflow-hidden"
-                    style={{
-                      clipPath: 'polygon(15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%)',
-                    }}
-                  >
-                    <div className="absolute inset-0 glass-morphism -z-10 bg-white/[0.02] border-white/5 group-hover:bg-white/[0.06] transition-all duration-500" />
-                    
-                    <div className="absolute top-5 left-1/2 -translate-x-1/2 text-[7px] uppercase tracking-[0.6em] text-white/20 font-bold whitespace-nowrap">
+                  <div className="relative w-full max-w-[220px] pt-12 pb-12 px-6 flex flex-col items-center text-center">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 text-[7px] uppercase tracking-[0.6em] text-white/20 font-bold whitespace-nowrap">
                       {woman.nodeSource} Branch
                     </div>
+                    <h3 className="text-lg font-bold text-white tracking-[0.12em] uppercase italic mb-2">
+                      {woman.name}
+                    </h3>
+                    <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed mb-4">
+                      {woman.caption}
+                    </p>
 
-                    <motion.div 
-                      className="absolute top-0 left-0 right-0 h-[1px] opacity-10 group-hover:opacity-100 transition-opacity duration-500"
-                      style={{ backgroundColor: woman.color, boxShadow: `0 0 20px ${woman.color}` }}
-                    />
-
-                    <div className="text-center space-y-3 z-20">
-                      <h3 className="text-lg font-bold text-white tracking-[0.12em] uppercase italic group-hover:text-white transition-colors duration-400">
-                        {woman.name}
-                      </h3>
-                      
-                      <div className="h-[1px] w-6 bg-white/10 mx-auto transition-all duration-500 group-hover:w-12" 
-                           style={{ backgroundColor: woman.color }} 
-                      />
-                      
-                      <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed max-w-[140px] mx-auto group-hover:text-white/60 transition-all duration-500">
-                        {woman.caption}
-                      </p>
-
-                      {/* Inspirational Quote - Materializes on Hover */}
-                      <p className="text-[8px] text-white/40 italic tracking-[0.1em] mt-4 opacity-0 transform translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-700 glow-sm max-w-[150px] mx-auto">
-                        "{woman.quote}"
-                      </p>
-                    </div>
-
-                    <motion.div 
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-                    />
-                  </motion.div>
-
-                  {/* Node Connection Base Glow */}
-                  <motion.div 
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      opacity: [0.2, 0.4, 0.2]
-                    }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                    className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-24 h-1 blur-xl" 
-                    style={{ backgroundColor: woman.color }}
-                  />
+                    {/* Sequential Quote */}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.p 
+                          initial={{ opacity: 0, y: 10 }} 
+                          animate={{ opacity: 1, y: 0 }} 
+                          exit={{ opacity: 0 }}
+                          className="text-[8px] text-white/60 italic tracking-[0.1em] glow-sm"
+                        >
+                          "{woman.quote}"
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -252,22 +205,12 @@ export const WomenInTechGallery: React.FC = () => {
         })}
       </div>
 
-      {/* Poetic Line Under Gallery */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.3 }}
-        className="mt-48 text-center relative z-10"
-      >
-        <div className="w-12 h-[1px] bg-white/10 mx-auto mb-10" />
-        <p className="text-[10px] uppercase tracking-[0.8em] text-white/20 italic leading-loose max-w-sm mx-auto">
+      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="mt-48 text-center relative z-10">
+        <p className="text-[10px] uppercase tracking-[0.8em] text-white/20 italic max-w-sm mx-auto">
           Innovation is not a single mind.<br />
           It is a constellation of pioneers.
         </p>
       </motion.div>
-
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_bottom,rgba(139,92,246,0.02)_0%,transparent_70%)] -z-10" />
     </div>
   );
 };
