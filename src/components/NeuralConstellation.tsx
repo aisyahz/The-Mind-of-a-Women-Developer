@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NODES, NodeData } from '@/lib/constants';
 
@@ -18,6 +18,8 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
   const [isExpanding, setIsExpanding] = useState(false);
   const [neuralThreads, setNeuralThreads] = useState<string[]>([]);
+  const [coreConnections, setCoreConnections] = useState<{id: string, path: string, color: string}[]>([]);
+  const [expansionPaths, setExpansionPaths] = useState<string[]>([]);
   const [discoveredNodeId, setDiscoveredNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
@@ -35,6 +37,26 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       return `M ${startX},${startY} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
     });
     setNeuralThreads(generatedThreads);
+
+    // Generate core connections on client
+    const curiosity = NODES.find(n => n.id === 'curiosity');
+    if (curiosity) {
+      const conns = NODES.filter(n => n.id !== 'curiosity').map(node => ({
+        id: `link-${node.id}`,
+        path: `M ${curiosity.x},${curiosity.y} Q ${(curiosity.x + node.x) / 2 + (Math.random() * 40 - 20)}, ${(curiosity.y + node.y) / 2 + (Math.random() * 40 - 20)} ${node.x},${node.y}`,
+        color: node.color
+      }));
+      setCoreConnections(conns);
+    }
+
+    // Generate expansion paths on client
+    const paths = [0, 1, 2, 3, 4, 5].map((idx) => {
+      const targetX = 100 + (idx * 120);
+      const cp1x = 420 + (Math.random() - 0.5) * 200;
+      const cp2x = targetX + (Math.random() - 0.5) * 200;
+      return `M 420,410 C ${cp1x},600 ${cp2x},800 ${targetX},1300`;
+    });
+    setExpansionPaths(paths);
 
     const brainTimer = setTimeout(() => setShowBrain(true), 2000);
     NODES.forEach((node, index) => {
@@ -61,17 +83,6 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       setDiscoveredNodeId(node.id === discoveredNodeId ? null : node.id);
     }
   };
-
-  // Connection lines between Curiosity (Core) and other nodes
-  const coreConnections = useMemo(() => {
-    const curiosity = NODES.find(n => n.id === 'curiosity');
-    if (!curiosity) return [];
-    return NODES.filter(n => n.id !== 'curiosity').map(node => ({
-      id: `link-${node.id}`,
-      path: `M ${curiosity.x},${curiosity.y} Q ${(curiosity.x + node.x) / 2 + (Math.random() * 40 - 20)}, ${(curiosity.y + node.y) / 2 + (Math.random() * 40 - 20)} ${node.x},${node.y}`,
-      color: node.color
-    }));
-  }, []);
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
@@ -171,23 +182,18 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
           <AnimatePresence>
             {isExpanding && (
               <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                {[0, 1, 2, 3, 4, 5].map((idx) => {
-                  const targetX = 100 + (idx * 120);
-                  const cp1x = 420 + (Math.random() - 0.5) * 200;
-                  const cp2x = targetX + (Math.random() - 0.5) * 200;
-                  return (
-                    <motion.path
-                      key={`expansion-line-${idx}`}
-                      d={`M 420,410 C ${cp1x},600 ${cp2x},800 ${targetX},1300`}
-                      fill="none"
-                      stroke="rgba(139, 92, 246, 0.4)"
-                      strokeWidth="1.2"
-                      initial={{ pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: [0, 0.7, 0.2] }}
-                      transition={{ duration: 6, ease: "easeInOut", delay: idx * 0.2 }}
-                    />
-                  );
-                })}
+                {expansionPaths.map((d, idx) => (
+                  <motion.path
+                    key={`expansion-line-${idx}`}
+                    d={d}
+                    fill="none"
+                    stroke="rgba(139, 92, 246, 0.4)"
+                    strokeWidth="1.2"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: [0, 0.7, 0.2] }}
+                    transition={{ duration: 6, ease: "easeInOut", delay: idx * 0.2 }}
+                  />
+                ))}
               </motion.g>
             )}
           </AnimatePresence>

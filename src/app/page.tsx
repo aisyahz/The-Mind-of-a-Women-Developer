@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { NeuralConstellation } from '@/components/NeuralConstellation';
@@ -19,6 +19,14 @@ interface ConstellationBranch {
   nodes: BranchNode[];
 }
 
+interface EnvironmentAccent {
+  id: number;
+  duration: number;
+  delay: number;
+  top: string;
+  left: string;
+}
+
 export default function Home() {
   const [isExplored, setIsExplored] = useState(false);
   const [isFinalRevealed, setIsFinalRevealed] = useState(false);
@@ -27,11 +35,23 @@ export default function Home() {
   const [isIgnited, setIsIgnited] = useState(false);
   const [branches, setBranches] = useState<ConstellationBranch[]>([]);
   const [showConceptualIntro, setShowConceptualIntro] = useState(true);
+  const [environmentAccents, setEnvironmentAccents] = useState<EnvironmentAccent[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowConceptualIntro(false);
     }, 7000);
+
+    // Generate environment accents on client to avoid hydration mismatch
+    const generatedAccents = [...Array(60)].map((_, i) => ({
+      id: i,
+      duration: 4 + Math.random() * 6,
+      delay: Math.random() * 10,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+    }));
+    setEnvironmentAccents(generatedAccents);
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -381,20 +401,20 @@ export default function Home() {
 
                   {/* Environment Accents */}
                   <div className="absolute inset-0 pointer-events-none -z-10">
-                    {[...Array(60)].map((_, i) => (
+                    {environmentAccents.map((accent) => (
                       <motion.div
-                        key={i}
+                        key={accent.id}
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: [0, 0.1, 0] }}
                         transition={{ 
-                          duration: 4 + Math.random() * 6, 
+                          duration: accent.duration, 
                           repeat: Infinity, 
-                          delay: Math.random() * 10 
+                          delay: accent.delay 
                         }}
                         className="absolute w-[1px] h-[1px] bg-white rounded-full"
                         style={{
-                          top: `${Math.random() * 100}%`,
-                          left: `${Math.random() * 100}%`,
+                          top: accent.top,
+                          left: accent.left,
                         }}
                       />
                     ))}
