@@ -60,8 +60,8 @@ export const WomenInTechGallery: React.FC = () => {
                 whileInView={{ pathLength: 1, opacity: 0.2 }}
                 viewport={{ once: true, margin: "0px 0px -200px 0px" }}
                 transition={{ 
-                  duration: 5.0,
-                  delay: idx * 0.5, 
+                  duration: 3.0,
+                  delay: idx * 0.3, 
                   ease: [0.4, 0, 0.2, 1] 
                 }}
               />
@@ -75,7 +75,7 @@ export const WomenInTechGallery: React.FC = () => {
         initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         viewport={{ once: true }}
-        transition={{ duration: 2, ease: "easeOut" }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
         className="text-center mb-56 relative z-10"
       >
         <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-8 font-medium">
@@ -98,7 +98,7 @@ export const WomenInTechGallery: React.FC = () => {
               initial={{ scale: 0, opacity: 0 }}
               whileInView={{ scale: [0, 1.5, 1], opacity: [0, 1, 0.4] }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 2.5, delay: 2.5 + idx * 0.4, ease: "easeOut" }}
+              transition={{ duration: 1.5, delay: 0.8 + idx * 0.2, ease: "easeOut" }}
               className="absolute top-20 w-4 h-4 rounded-full blur-xl"
               style={{ backgroundColor: woman.color }}
             />
@@ -107,7 +107,7 @@ export const WomenInTechGallery: React.FC = () => {
               initial={{ opacity: 0, filter: 'blur(30px)', scale: 0.85, y: 40 }}
               whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 3.5, delay: 3.5 + idx * 0.4, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 2.0, delay: 1.2 + idx * 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="group relative flex flex-col items-center w-full"
             >
               <div className="relative w-full flex flex-col items-center">
@@ -131,7 +131,7 @@ export const WomenInTechGallery: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1.8, delay: 5.5 + idx * 0.4 }}
+                  transition={{ duration: 1.2, delay: 2.2 + idx * 0.2 }}
                   className="relative w-full max-w-[240px] pt-20 pb-12 px-8 flex flex-col items-center justify-center overflow-hidden"
                   style={{
                     clipPath: 'polygon(15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%)',
@@ -182,7 +182,7 @@ export const WomenInTechGallery: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 2, delay: 1 }}
+        transition={{ duration: 1.5, delay: 0.5 }}
         className="mt-72 text-center relative z-10"
       >
         <div className="w-16 h-[1px] bg-white/10 mx-auto mb-12" />

@@ -91,14 +91,14 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       // Trigger exploration state in parent
       onExplore?.();
 
-      // Slow cinematic transition
+      // Slightly faster cinematic transition
       setTimeout(() => {
         const gallery = document.getElementById('gallery-section');
         if (gallery) {
           gallery.scrollIntoView({ behavior: 'smooth' });
         }
-        setTimeout(() => setIsExpanding(false), 6000);
-      }, 1500);
+        setTimeout(() => setIsExpanding(false), 4000);
+      }, 1200);
     }
   };
 
@@ -187,9 +187,9 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: [0, 1, 0.4] }}
                     transition={{ 
-                      duration: 4.5, 
+                      duration: 3.0, 
                       ease: [0.4, 0, 0.2, 1], 
-                      delay: idx * 0.15 
+                      delay: idx * 0.1 
                     }}
                   />
                 ))}
