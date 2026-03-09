@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useRef } from 'react';
@@ -18,10 +19,12 @@ export const CosmicBackground: React.FC = () => {
     let shootingStars: ShootingStar[] = [];
     let scrollY = 0;
     
+    // Increased density and distinct parallax layers for immersion
     const layerConfigs = [
-      { count: 180, size: 0.7, speed: 0.03, opacity: 0.15, parallax: 0.02 }, // Distance
-      { count: 100, size: 1.1, speed: 0.07, opacity: 0.35, parallax: 0.05 },  // Mid
-      { count: 40, size: 2.2, speed: 0.15, opacity: 0.08, parallax: 0.12 },  // Near (Bokeh)
+      { count: 250, size: 0.6, speed: 0.02, opacity: 0.2, parallax: 0.01 }, // Deep Distance
+      { count: 180, size: 1.0, speed: 0.05, opacity: 0.4, parallax: 0.04 },  // Mid Distance
+      { count: 100, size: 1.8, speed: 0.12, opacity: 0.5, parallax: 0.10 },  // Foreground Stars
+      { count: 30, size: 3.5, speed: 0.25, opacity: 0.1, parallax: 0.20 },  // Near Bokeh
     ];
 
     class Particle {
@@ -43,7 +46,7 @@ export const CosmicBackground: React.FC = () => {
         this.opacity = Math.random() * baseOpacity + (baseOpacity / 2);
         this.parallaxFactor = parallax;
         
-        const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#ffffff', '#60a5fa', '#f472b6'];
+        const colors = ['#3b82f6', '#8b5cf6', '#ec4899', '#ffffff', '#60a5fa', '#f472b6', '#22d3ee'];
         this.color = colors[Math.floor(Math.random() * colors.length)];
       }
 
@@ -86,13 +89,13 @@ export const CosmicBackground: React.FC = () => {
       reset() {
         this.active = false;
         // Randomly trigger shooting stars
-        if (Math.random() > 0.997) {
+        if (Math.random() > 0.998) {
           this.active = true;
           this.x = Math.random() * canvas!.width;
-          this.y = Math.random() * (canvas!.height * 0.5);
-          this.length = Math.random() * 150 + 50;
-          this.speed = Math.random() * 15 + 10;
-          this.opacity = Math.random() * 0.5 + 0.2;
+          this.y = Math.random() * (canvas!.height * 0.4);
+          this.length = Math.random() * 250 + 100;
+          this.speed = Math.random() * 20 + 15;
+          this.opacity = Math.random() * 0.6 + 0.3;
         }
       }
 
@@ -103,8 +106,8 @@ export const CosmicBackground: React.FC = () => {
         }
 
         this.x += this.speed;
-        this.y += this.speed * 0.5;
-        this.opacity -= 0.01;
+        this.y += this.speed * 0.4;
+        this.opacity -= 0.008;
 
         if (this.opacity <= 0 || this.x > canvas!.width || this.y > canvas!.height) {
           this.reset();
@@ -115,14 +118,14 @@ export const CosmicBackground: React.FC = () => {
         if (!this.active) return;
         
         ctx!.beginPath();
-        const gradient = ctx!.createLinearGradient(this.x, this.y, this.x - this.length, this.y - this.length * 0.5);
+        const gradient = ctx!.createLinearGradient(this.x, this.y, this.x - this.length, this.y - this.length * 0.4);
         gradient.addColorStop(0, `rgba(255, 255, 255, ${this.opacity})`);
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
         
         ctx!.strokeStyle = gradient;
-        ctx!.lineWidth = 1.5;
+        ctx!.lineWidth = 2;
         ctx!.moveTo(this.x, this.y);
-        ctx!.lineTo(this.x - this.length, this.y - this.length * 0.5);
+        ctx!.lineTo(this.x - this.length, this.y - this.length * 0.4);
         ctx!.stroke();
       }
     }
@@ -139,15 +142,16 @@ export const CosmicBackground: React.FC = () => {
       constructor() {
         this.x = Math.random() * canvas!.width;
         this.y = Math.random() * canvas!.height;
-        this.radius = Math.random() * 500 + 300;
-        this.speedX = (Math.random() * 0.05 - 0.025);
-        this.speedY = (Math.random() * 0.05 - 0.025);
-        this.parallaxFactor = 0.03;
+        this.radius = Math.random() * 800 + 400;
+        this.speedX = (Math.random() * 0.08 - 0.04);
+        this.speedY = (Math.random() * 0.08 - 0.04);
+        this.parallaxFactor = 0.02;
         
         const nebulaColors = [
-          'rgba(59, 130, 246, 0.04)', // Blue
-          'rgba(139, 92, 246, 0.05)', // Violet
-          'rgba(236, 72, 153, 0.04)', // Pink
+          'rgba(59, 130, 246, 0.06)', // Blue
+          'rgba(139, 92, 246, 0.08)', // Violet
+          'rgba(236, 72, 153, 0.06)', // Pink
+          'rgba(34, 211, 238, 0.05)', // Cyan
         ];
         this.color = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
       }
@@ -177,14 +181,14 @@ export const CosmicBackground: React.FC = () => {
     const init = () => {
       particles = [];
       nebulas = [];
-      shootingStars = [new ShootingStar(), new ShootingStar()];
+      shootingStars = Array.from({ length: 4 }).map(() => new ShootingStar());
       
       layerConfigs.forEach(layer => {
         for (let i = 0; i < layer.count; i++) {
           particles.push(new Particle(layer.size, layer.speed, layer.opacity, layer.parallax));
         }
       });
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 7; i++) {
         nebulas.push(new Nebula());
       }
     };
