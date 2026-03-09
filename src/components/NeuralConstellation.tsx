@@ -319,15 +319,40 @@ export const NeuralConstellation: React.FC = () => {
                 <AnimatePresence>
                   {isVisible && (
                     <>
+                      {/* Discovery Sonar Pulse for Curiosity */}
+                      {isCuriosity && (
+                        <g>
+                          {[0, 1, 2].map((idx) => (
+                            <motion.circle
+                              key={`sonar-${idx}`}
+                              cx={node.x}
+                              cy={node.y}
+                              r={16}
+                              fill="none"
+                              stroke={node.color}
+                              strokeWidth="0.5"
+                              initial={{ scale: 1, opacity: 0.5 }}
+                              animate={{ scale: 3.5, opacity: 0 }}
+                              transition={{
+                                duration: 3,
+                                repeat: Infinity,
+                                delay: idx * 1,
+                                ease: "easeOut"
+                              }}
+                            />
+                          ))}
+                        </g>
+                      )}
+
                       <motion.circle
                         cx={node.x}
                         cy={node.y}
-                        r={isActive ? (isCuriosity ? 16 : 12) : 5}
+                        r={isActive ? (isCuriosity ? 16 : 12) : (isCuriosity ? 8 : 5)}
                         fill={node.color}
                         initial={{ scale: 0 }}
                         animate={{ 
                           scale: isCuriosity && isActive ? 1.2 : 1,
-                          opacity: isCuriosity && isActive ? 1 : 0.7
+                          opacity: isCuriosity ? 1 : 0.7
                         }}
                         transition={{ type: "spring", stiffness: 150, damping: 25 }}
                         filter={`url(#glow-${node.id})`}
@@ -337,7 +362,7 @@ export const NeuralConstellation: React.FC = () => {
                       <motion.circle
                         cx={node.x}
                         cy={node.y}
-                        r={isActive ? 35 : 18}
+                        r={isActive ? 35 : (isCuriosity ? 24 : 18)}
                         stroke={node.color}
                         strokeWidth="0.4"
                         fill="none"
@@ -349,26 +374,31 @@ export const NeuralConstellation: React.FC = () => {
                         x={node.x}
                         y={node.y + (node.y > 410 ? 50 : -40)}
                         textAnchor="middle"
-                        fill={isActive ? node.color : "rgba(255,255,255,0.2)"}
+                        fill={isActive ? node.color : (isCuriosity ? "white" : "rgba(255,255,255,0.2)")}
                         fontSize="8"
                         fontWeight="600"
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        animate={{ opacity: isCuriosity ? 0.8 : 1 }}
                         className="font-body tracking-[0.8em] uppercase pointer-events-none transition-all duration-700"
                       >
                         {node.label}
                       </motion.text>
 
-                      {isCuriosity && isActive && (
-                        <motion.g initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-none">
+                      {/* Persistent CTA for Curiosity */}
+                      {isCuriosity && (
+                        <motion.g 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: isActive ? 1 : 0.3 }}
+                          transition={{ duration: 1 }}
+                        >
                           <text 
                             x={node.x} 
                             y={node.y + 70} 
                             textAnchor="middle" 
                             fill="white" 
-                            className="text-[6px] uppercase tracking-[0.4em] font-medium opacity-30"
+                            className="text-[7px] uppercase tracking-[0.6em] font-bold"
                           >
-                            Discover the pioneers
+                            {isActive ? "Discover the pioneers" : "Tap to Explore"}
                           </text>
                         </motion.g>
                       )}
