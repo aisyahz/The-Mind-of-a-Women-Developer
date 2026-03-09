@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { ArrowLeft, Sparkles, Target, Users, TrendingUp, Globe } from 'lucide-react';
 import Link from 'next/link';
 
@@ -18,10 +18,12 @@ const EQUITY_DATA = [
   { category: "Startup Funding", value: 2.3, color: "#f59e0b", label: "VC Funding for Women-led Startups" },
 ];
 
-const PAY_GAP_DATA = [
-  { name: 'Men', value: 100, color: '#3b82f6' },
-  { name: 'Women', value: 82, color: '#f43f5e' },
-];
+const chartConfig = {
+  value: {
+    label: "Percentage (%)",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
 
 export default function EquityPage() {
   const [isMounted, setIsMounted] = useState(false);
@@ -93,7 +95,7 @@ export default function EquityPage() {
             </div>
 
             <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
+              <ChartContainer config={chartConfig}>
                 <BarChart data={EQUITY_DATA} layout="vertical">
                   <XAxis type="number" hide />
                   <YAxis 
@@ -114,7 +116,7 @@ export default function EquityPage() {
                     ))}
                   </Bar>
                 </BarChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </div>
           </motion.div>
 
