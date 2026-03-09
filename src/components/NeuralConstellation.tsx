@@ -98,7 +98,10 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
         </motion.p>
       </div>
 
-      <svg viewBox="0 0 800 1000" className="relative z-10 w-full max-w-5xl h-auto overflow-visible select-none">
+      <svg 
+        viewBox="0 0 800 1000" 
+        className="relative z-10 w-full max-w-5xl h-auto max-h-[85vh] overflow-visible select-none"
+      >
         <defs>
           {NODES.map((node) => (
             <filter id={`glow-${node.id}`} key={node.id} x="-100%" y="-100%" width="300%" height="300%">

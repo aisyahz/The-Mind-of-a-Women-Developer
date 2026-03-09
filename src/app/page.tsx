@@ -187,12 +187,10 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative w-full h-screen overflow-hidden flex items-center justify-center z-10 shrink-0">
-        <div className="relative w-full h-full">
-          <NeuralConstellation 
-            onExplore={() => setIsExplored(true)} 
-            externalHighlightId={highlightedNodeId}
-          />
-        </div>
+        <NeuralConstellation 
+          onExplore={() => setIsExplored(true)} 
+          externalHighlightId={highlightedNodeId}
+        />
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)] z-5" />
       </section>
 
