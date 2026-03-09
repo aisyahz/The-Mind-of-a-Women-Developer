@@ -39,31 +39,54 @@ const WOMEN_FIGURES = [
   }
 ];
 
+const OrbitingParticles = ({ color }: { color: string }) => {
+  return (
+    <div className="absolute inset-0 pointer-events-none">
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 rounded-full"
+          style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }}
+          animate={{
+            rotate: 360,
+            x: [Math.cos(i) * 120, Math.cos(i + 2 * Math.PI) * 120],
+            y: [Math.sin(i) * 120, Math.sin(i + 2 * Math.PI) * 120],
+          }}
+          transition={{
+            duration: 10 + i * 2,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
 export const WomenInTechGallery: React.FC = () => {
   return (
     <div id="gallery-section" className="relative py-32 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
-      {/* Constellation Bridge Lines */}
-      <div className="absolute top-0 left-0 w-full h-[600px] pointer-events-none overflow-visible">
-        <svg viewBox="0 0 1200 600" className="w-full h-full preserve-3d">
+      {/* Constellation Bridge Lines (Background Connections) */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
           {WOMEN_FIGURES.map((woman, idx) => {
-            const startX = woman.startX || (300 + idx * 200);
-            const endX = 150 + (idx * 300);
+            if (idx === WOMEN_FIGURES.length - 1) return null;
+            const nextWoman = WOMEN_FIGURES[idx + 1];
             return (
-              <motion.path
-                key={`bridge-line-${idx}`}
-                d={`M ${startX},-100 C ${startX},100 ${endX},200 ${endX},500`}
-                fill="none"
-                stroke={woman.color}
-                strokeWidth="1.2"
+              <motion.line
+                key={`bridge-${idx}`}
+                x1={150 + (idx * 300)}
+                y1={400}
+                x2={150 + ((idx + 1) * 300)}
+                y2={400}
+                stroke="white"
+                strokeWidth="0.5"
+                strokeDasharray="4 8"
                 initial={{ pathLength: 0, opacity: 0 }}
-                whileInView={{ pathLength: 1, opacity: 0.15 }}
-                viewport={{ once: true, margin: "0px 0px -100px 0px" }}
-                transition={{ 
-                  duration: 2.0,
-                  delay: idx * 0.2, 
-                  ease: "easeInOut" 
-                }}
+                whileInView={{ pathLength: 1, opacity: 0.3 }}
+                viewport={{ once: true }}
+                transition={{ duration: 2, delay: 1 }}
               />
             );
           })}
@@ -76,7 +99,7 @@ export const WomenInTechGallery: React.FC = () => {
         whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         viewport={{ once: true }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="text-center mb-32 relative z-10"
+        className="text-center mb-48 relative z-10"
       >
         <p className="text-[10px] uppercase tracking-[1.5em] text-white/20 mb-6 font-medium">
           The constellation that came before us.
@@ -94,25 +117,42 @@ export const WomenInTechGallery: React.FC = () => {
         {WOMEN_FIGURES.map((woman, idx) => (
           <div key={woman.name} className="relative flex flex-col items-center">
             
+            {/* Constellation Node Core (The Star Background) */}
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
-              whileInView={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.3] }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 1.2, delay: 0.5 + idx * 0.1, ease: "easeOut" }}
-              className="absolute top-20 w-4 h-4 rounded-full blur-xl"
+              whileInView={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.4] }}
+              viewport={{ once: true }}
+              transition={{ duration: 2, delay: 0.5 + idx * 0.1 }}
+              className="absolute top-24 w-64 h-64 rounded-full blur-[80px]"
               style={{ backgroundColor: woman.color }}
             />
+
+            {/* Orbiting Elements */}
+            <div className="absolute top-24 w-80 h-80 flex items-center justify-center pointer-events-none">
+              <OrbitingParticles color={woman.color} />
+              
+              {/* Faint Orbit Rings */}
+              {[120, 160].map((radius, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute rounded-full border border-white/5"
+                  style={{ width: radius * 2, height: radius * 2 }}
+                  animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
+                  transition={{ duration: 30 + i * 10, repeat: Infinity, ease: "linear" }}
+                />
+              ))}
+            </div>
 
             <motion.div
               initial={{ opacity: 0, filter: 'blur(20px)', scale: 0.9, y: 30 }}
               whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: true }}
               transition={{ duration: 1.5, delay: 0.7 + idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="group relative flex flex-col items-center w-full"
             >
               <div className="relative w-full flex flex-col items-center">
                 
-                {/* Portrait */}
+                {/* Portrait - Styled as Node Content */}
                 <motion.div 
                   className="relative w-56 h-72 z-10 -mb-10 transition-all duration-700 ease-out group-hover:-translate-y-6"
                 >
@@ -167,8 +207,14 @@ export const WomenInTechGallery: React.FC = () => {
                   />
                 </motion.div>
 
-                <div 
-                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-24 h-1 blur-xl opacity-20 group-hover:opacity-40 transition-all duration-700" 
+                {/* Node Connection Base Glow */}
+                <motion.div 
+                  animate={{ 
+                    scale: [1, 1.2, 1],
+                    opacity: [0.2, 0.4, 0.2]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-24 h-1 blur-xl" 
                   style={{ backgroundColor: woman.color }}
                 />
               </div>
