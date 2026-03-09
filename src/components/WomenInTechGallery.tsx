@@ -72,7 +72,8 @@ export const WomenInTechGallery: React.FC = () => {
         <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
           {WOMEN_FIGURES.map((woman, idx) => {
             if (idx === WOMEN_FIGURES.length - 1) return null;
-            const nextWoman = WOMEN_FIGURES[idx + 1];
+            // Choreographed timing: Line appears after current woman and before next woman
+            const lineDelay = 1.2 + idx * 1.5; 
             return (
               <motion.line
                 key={`bridge-${idx}`}
@@ -85,8 +86,8 @@ export const WomenInTechGallery: React.FC = () => {
                 strokeDasharray="4 8"
                 initial={{ pathLength: 0, opacity: 0 }}
                 whileInView={{ pathLength: 1, opacity: 0.3 }}
-                viewport={{ once: true }}
-                transition={{ duration: 2, delay: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 1.5, delay: lineDelay, ease: "easeInOut" }}
               />
             );
           })}
@@ -114,113 +115,132 @@ export const WomenInTechGallery: React.FC = () => {
 
       {/* Figures Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-24 md:gap-12 max-w-7xl w-full px-4 relative z-10">
-        {WOMEN_FIGURES.map((woman, idx) => (
-          <div key={woman.name} className="relative flex flex-col items-center">
-            
-            {/* Constellation Node Core (The Star Background) */}
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              whileInView={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.4] }}
-              viewport={{ once: true }}
-              transition={{ duration: 2, delay: 0.5 + idx * 0.1 }}
-              className="absolute top-24 w-64 h-64 rounded-full blur-[80px]"
-              style={{ backgroundColor: woman.color }}
-            />
+        {WOMEN_FIGURES.map((woman, idx) => {
+          // Sequential reveal timing
+          const figureDelay = 0.5 + idx * 1.5;
 
-            {/* Orbiting Elements */}
-            <div className="absolute top-24 w-80 h-80 flex items-center justify-center pointer-events-none">
-              <OrbitingParticles color={woman.color} />
+          return (
+            <div key={woman.name} className="relative flex flex-col items-center">
               
-              {/* Faint Orbit Rings */}
-              {[120, 160].map((radius, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute rounded-full border border-white/5"
-                  style={{ width: radius * 2, height: radius * 2 }}
-                  animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                  transition={{ duration: 30 + i * 10, repeat: Infinity, ease: "linear" }}
-                />
-              ))}
-            </div>
+              {/* Constellation Node Core (The Star Background) */}
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                whileInView={{ scale: [0, 1.4, 1], opacity: [0, 1, 0.4] }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 2, delay: figureDelay }}
+                className="absolute top-24 w-64 h-64 rounded-full blur-[80px]"
+                style={{ backgroundColor: woman.color }}
+              />
 
-            <motion.div
-              initial={{ opacity: 0, filter: 'blur(20px)', scale: 0.9, y: 30 }}
-              whileInView={{ opacity: 1, filter: 'blur(0px)', scale: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, delay: 0.7 + idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative flex flex-col items-center w-full"
-            >
-              <div className="relative w-full flex flex-col items-center">
+              {/* Orbiting Elements */}
+              <div className="absolute top-24 w-80 h-80 flex items-center justify-center pointer-events-none">
+                <OrbitingParticles color={woman.color} />
                 
-                {/* Portrait - Styled as Node Content */}
-                <motion.div 
-                  className="relative w-56 h-72 z-10 -mb-10 transition-all duration-700 ease-out group-hover:-translate-y-6"
-                >
-                  <Image 
-                    src={woman.image}
-                    alt={woman.name}
-                    fill
-                    className="object-contain filter grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 group-hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.08)] transition-all duration-700"
-                    sizes="(max-width: 768px) 100vw, 25vw"
+                {/* Faint Orbit Rings */}
+                {[120, 160].map((radius, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute rounded-full border border-white/5"
+                    style={{ width: radius * 2, height: radius * 2 }}
+                    animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
+                    transition={{ duration: 30 + i * 10, repeat: Infinity, ease: "linear" }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
-                </motion.div>
-
-                {/* Pedestal Panel */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.0, delay: 1.2 + idx * 0.1 }}
-                  className="relative w-full max-w-[220px] pt-16 pb-10 px-6 flex flex-col items-center justify-center overflow-hidden"
-                  style={{
-                    clipPath: 'polygon(15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%)',
-                  }}
-                >
-                  <div className="absolute inset-0 glass-morphism -z-10 bg-white/[0.02] border-white/5 group-hover:bg-white/[0.06] transition-all duration-500" />
-                  
-                  <div className="absolute top-5 left-1/2 -translate-x-1/2 text-[7px] uppercase tracking-[0.6em] text-white/20 font-bold whitespace-nowrap">
-                    {woman.nodeSource} Branch
-                  </div>
-
-                  <motion.div 
-                    className="absolute top-0 left-0 right-0 h-[1px] opacity-10 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ backgroundColor: woman.color, boxShadow: `0 0 20px ${woman.color}` }}
-                  />
-
-                  <div className="text-center space-y-3 z-20">
-                    <h3 className="text-lg font-bold text-white tracking-[0.12em] uppercase italic group-hover:text-white transition-colors duration-400">
-                      {woman.name}
-                    </h3>
-                    
-                    <div className="h-[1px] w-6 bg-white/10 mx-auto transition-all duration-500 group-hover:w-12" 
-                         style={{ backgroundColor: woman.color }} 
-                    />
-                    
-                    <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed max-w-[140px] mx-auto group-hover:text-white/60 transition-all duration-500">
-                      {woman.caption}
-                    </p>
-                  </div>
-
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-                  />
-                </motion.div>
-
-                {/* Node Connection Base Glow */}
-                <motion.div 
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    opacity: [0.2, 0.4, 0.2]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-24 h-1 blur-xl" 
-                  style={{ backgroundColor: woman.color }}
-                />
+                ))}
               </div>
-            </motion.div>
-          </div>
-        ))}
+
+              <motion.div
+                initial={{ opacity: 0, filter: 'blur(20px)', scale: 0.9, y: 30 }}
+                whileInView={{ 
+                  opacity: 1, 
+                  filter: 'blur(0px)', 
+                  scale: 1, 
+                  y: 0,
+                }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 1.5, delay: figureDelay + 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="group relative flex flex-col items-center w-full"
+              >
+                {/* Reveal Pulse Effect */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: [0, 0.5, 0], scale: [0.8, 1.5, 2] }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 2, delay: figureDelay }}
+                  className="absolute top-48 w-full h-1 bg-white/20 blur-2xl rounded-full"
+                />
+
+                <div className="relative w-full flex flex-col items-center">
+                  
+                  {/* Portrait - Styled as Node Content */}
+                  <motion.div 
+                    className="relative w-56 h-72 z-10 -mb-10 transition-all duration-700 ease-out group-hover:-translate-y-6"
+                  >
+                    <Image 
+                      src={woman.image}
+                      alt={woman.name}
+                      fill
+                      className="object-contain filter grayscale brightness-75 group-hover:grayscale-0 group-hover:brightness-110 group-hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.08)] transition-all duration-700"
+                      sizes="(max-width: 768px) 100vw, 25vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent opacity-80" />
+                  </motion.div>
+
+                  {/* Pedestal Panel */}
+                  <motion.div 
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 1.0, delay: figureDelay + 0.5 }}
+                    className="relative w-full max-w-[220px] pt-16 pb-10 px-6 flex flex-col items-center justify-center overflow-hidden"
+                    style={{
+                      clipPath: 'polygon(15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%)',
+                    }}
+                  >
+                    <div className="absolute inset-0 glass-morphism -z-10 bg-white/[0.02] border-white/5 group-hover:bg-white/[0.06] transition-all duration-500" />
+                    
+                    <div className="absolute top-5 left-1/2 -translate-x-1/2 text-[7px] uppercase tracking-[0.6em] text-white/20 font-bold whitespace-nowrap">
+                      {woman.nodeSource} Branch
+                    </div>
+
+                    <motion.div 
+                      className="absolute top-0 left-0 right-0 h-[1px] opacity-10 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ backgroundColor: woman.color, boxShadow: `0 0 20px ${woman.color}` }}
+                    />
+
+                    <div className="text-center space-y-3 z-20">
+                      <h3 className="text-lg font-bold text-white tracking-[0.12em] uppercase italic group-hover:text-white transition-colors duration-400">
+                        {woman.name}
+                      </h3>
+                      
+                      <div className="h-[1px] w-6 bg-white/10 mx-auto transition-all duration-500 group-hover:w-12" 
+                           style={{ backgroundColor: woman.color }} 
+                      />
+                      
+                      <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] leading-relaxed max-w-[140px] mx-auto group-hover:text-white/60 transition-all duration-500">
+                        {woman.caption}
+                      </p>
+                    </div>
+
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
+                    />
+                  </motion.div>
+
+                  {/* Node Connection Base Glow */}
+                  <motion.div 
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.2, 0.4, 0.2]
+                    }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                    className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-24 h-1 blur-xl" 
+                    style={{ backgroundColor: woman.color }}
+                  />
+                </div>
+              </motion.div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Poetic Line Under Gallery */}
