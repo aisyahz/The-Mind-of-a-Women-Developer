@@ -27,6 +27,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const [showBrain, setShowBrain] = useState(false);
   const [visibleNodes, setVisibleNodes] = useState<string[]>([]);
   const [isExpanding, setIsExpanding] = useState(false);
+  const [neuralThreads] = useState(generateNeuralThreads);
   
   useEffect(() => {
     const brainTimer = setTimeout(() => setShowBrain(true), 3500);
@@ -92,6 +93,22 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
         <motion.g animate={{ y: [0, -8, 0], scale: [1, 1.005, 1] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}>
           
+          {/* Procedural Neural Threads */}
+          <g opacity="0.3">
+            {neuralThreads.map((d, i) => (
+              <motion.path
+                key={`thread-${i}`}
+                d={d}
+                fill="none"
+                stroke="url(#thread-grad)"
+                strokeWidth="0.3"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: [0, 0.4, 0.1] }}
+                transition={{ duration: 8, delay: i * 0.1, repeat: Infinity, repeatType: "reverse" }}
+              />
+            ))}
+          </g>
+
           {/* Temporal Expansion Path */}
           <AnimatePresence>
             {isExpanding && (
