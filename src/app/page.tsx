@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { NeuralConstellation } from '@/components/NeuralConstellation';
 import { WomenInTechGallery } from '@/components/WomenInTechGallery';
@@ -28,11 +29,13 @@ interface EnvironmentAccent {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [isExplored, setIsExplored] = useState(false);
   const [isFinalRevealed, setIsFinalRevealed] = useState(false);
   const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(null);
   const [isFinalStarHovered, setIsFinalStarHovered] = useState(false);
   const [isIgnited, setIsIgnited] = useState(false);
+  const [isSupernova, setIsSupernova] = useState(false);
   const [branches, setBranches] = useState<ConstellationBranch[]>([]);
   const [showConceptualIntro, setShowConceptualIntro] = useState(true);
   const [environmentAccents, setEnvironmentAccents] = useState<EnvironmentAccent[]>([]);
@@ -80,7 +83,14 @@ export default function Home() {
   };
 
   const handleFinalStarClick = () => {
-    if (isIgnited) return;
+    if (isIgnited) {
+      setIsSupernova(true);
+      setTimeout(() => {
+        router.push('/equity');
+      }, 2500);
+      return;
+    }
+    
     setIsIgnited(true);
 
     // Generate organic branching paths
@@ -119,6 +129,19 @@ export default function Home() {
   return (
     <main className={`relative min-h-screen w-full bg-[#050508] flex flex-col items-center ${!isExplored ? 'overflow-hidden h-screen' : 'overflow-x-hidden'}`}>
       
+      {/* Supernova Flash Overlay */}
+      <AnimatePresence>
+        {isSupernova && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] bg-white pointer-events-none"
+            transition={{ duration: 1.5, ease: "easeIn" }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Conceptual Intro Sequence */}
       <AnimatePresence>
         {showConceptualIntro && (
@@ -267,7 +290,7 @@ export default function Home() {
                         onMouseEnter={() => setIsFinalStarHovered(true)}
                         onMouseLeave={() => setIsFinalStarHovered(false)}
                         onClick={handleFinalStarClick}
-                        className={`relative group ${isIgnited ? 'cursor-default' : 'cursor-none'}`}
+                        className={`relative group ${isSupernova ? 'cursor-default' : 'cursor-none'}`}
                         initial={{ scale: 0, opacity: 0 }}
                         whileInView={{ scale: 1, opacity: 1 }}
                         viewport={{ once: true }}
@@ -275,7 +298,7 @@ export default function Home() {
                        >
                          {/* Supernova Atmospheric Effect */}
                          <AnimatePresence>
-                           {(isFinalStarHovered || isIgnited) && (
+                           {(isFinalStarHovered || isIgnited) && !isSupernova && (
                              <>
                                <motion.div
                                  initial={{ scale: 0.5, opacity: 0 }}
@@ -308,6 +331,7 @@ export default function Home() {
                                {branches.map((branch) => (
                                  <g key={branch.id}>
                                    <motion.path
+                                     key={`${branch.id}-path`}
                                      d={branch.path}
                                      fill="none"
                                      stroke="white"
@@ -339,19 +363,19 @@ export default function Home() {
                          {/* Core Star Node */}
                          <motion.div
                            animate={{ 
-                             scale: isIgnited ? [1.5, 2.5, 2] : (isFinalStarHovered ? [1.3, 1.5, 1.3] : [1, 1.4, 1]),
-                             opacity: (isFinalStarHovered || isIgnited) ? 1 : [0.7, 1, 0.7],
+                             scale: isSupernova ? 50 : (isIgnited ? [1.5, 2.5, 2] : (isFinalStarHovered ? [1.3, 1.5, 1.3] : [1, 1.4, 1])),
+                             opacity: isSupernova ? 1 : ((isFinalStarHovered || isIgnited) ? 1 : [0.7, 1, 0.7]),
                              boxShadow: (isFinalStarHovered || isIgnited)
                                ? "0 0 80px rgba(255, 255, 255, 1), 0 0 120px rgba(139, 92, 246, 0.9)"
                                : "0 0 20px rgba(255, 255, 255, 0.4)"
                            }}
-                           transition={{ duration: isIgnited ? 4 : 4, repeat: isIgnited ? 0 : Infinity, ease: "easeInOut" }}
+                           transition={{ duration: isSupernova ? 2 : (isIgnited ? 4 : 4), repeat: isSupernova ? 0 : (isIgnited ? 0 : Infinity), ease: "easeInOut" }}
                            className="w-5 h-5 bg-white rounded-full relative z-10"
                          />
                          
                          {/* The Message Materialization */}
                          <AnimatePresence>
-                           {(isFinalStarHovered || isIgnited) && (
+                           {(isFinalStarHovered || isIgnited) && !isSupernova && (
                              <motion.div
                                initial={{ opacity: 0, y: 50 }}
                                animate={{ opacity: 1, y: 0 }}
@@ -362,7 +386,7 @@ export default function Home() {
                                <div className="flex gap-[0.3em] justify-center">
                                  {"Maybe the next star is you.".split("").map((char, i) => (
                                    <motion.span
-                                     key={i}
+                                     key={`char-${i}`}
                                      custom={i}
                                      variants={charVariants}
                                      initial="hidden"
@@ -383,14 +407,24 @@ export default function Home() {
                                  </motion.p>
                                )}
                                {isIgnited && (
-                                 <motion.p 
-                                   initial={{ opacity: 0 }}
-                                   animate={{ opacity: [0, 0.4, 0.2] }}
-                                   transition={{ delay: 3, duration: 2 }}
-                                   className="text-[9px] uppercase tracking-[0.8em] text-violet-300 text-center mt-8 italic"
-                                 >
-                                   Your curiosity has birthed a new legacy.
-                                 </motion.p>
+                                 <motion.div className="flex flex-col items-center">
+                                   <motion.p 
+                                     initial={{ opacity: 0 }}
+                                     animate={{ opacity: [0, 0.4, 0.2] }}
+                                     transition={{ delay: 3, duration: 2 }}
+                                     className="text-[9px] uppercase tracking-[0.8em] text-violet-300 text-center mt-8 italic"
+                                   >
+                                     Your curiosity has birthed a new legacy.
+                                   </motion.p>
+                                   <motion.p 
+                                     initial={{ opacity: 0, y: 10 }}
+                                     animate={{ opacity: 1, y: 0 }}
+                                     transition={{ delay: 4.5, duration: 1 }}
+                                     className="text-[10px] uppercase tracking-[0.4em] text-white text-center mt-6 font-bold cursor-none hover:text-primary transition-colors"
+                                   >
+                                     Click again to see the Equity Horizon
+                                   </motion.p>
+                                 </motion.div>
                                )}
                              </motion.div>
                            )}
