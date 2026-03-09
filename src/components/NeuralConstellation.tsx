@@ -54,7 +54,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       const targetX = 100 + (idx * 120);
       const cp1x = 420 + (Math.random() - 0.5) * 200;
       const cp2x = targetX + (Math.random() - 0.5) * 200;
-      return `M 420,410 C ${cp1x},600 ${cp2x},800 ${targetX},1300`;
+      return `M 420,410 C ${cp1x}, 600 ${cp2x}, 800 ${targetX}, 1300`;
     });
     setExpansionPaths(paths);
 
@@ -100,7 +100,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
       <svg 
         viewBox="0 0 800 1000" 
-        className="relative z-10 w-full max-w-5xl h-auto max-h-[85vh] overflow-visible select-none"
+        className="relative z-10 w-full max-w-6xl h-auto max-h-[95vh] overflow-visible select-none transition-all duration-1000"
       >
         <defs>
           {NODES.map((node) => (
