@@ -54,13 +54,22 @@ const WOMEN_FIGURES = [
 
 interface WomenInTechGalleryProps {
   onPioneerHover: (heroNodeId: string | null) => void;
+  onLegacyComplete?: () => void;
 }
 
-export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPioneerHover }) => {
+export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPioneerHover, onLegacyComplete }) => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [legacyHovered, setLegacyHovered] = useState(false);
+
+  const handleLegacyClick = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    onLegacyComplete?.();
+  };
 
   return (
-    <div id="gallery-section" className="relative py-48 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
+    <div id="gallery-section" className="relative pt-48 pb-64 px-6 md:px-24 flex flex-col items-center justify-center min-h-screen bg-transparent overflow-hidden">
       
       {/* Background Labels & Atmosphere */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -98,27 +107,8 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
         </h2>
       </motion.div>
 
-      {/* Legacy Core Node */}
-      <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-0">
-        <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 6, repeat: Infinity }}
-          className="w-96 h-96 rounded-full bg-white/5 blur-[100px]"
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <motion.div
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_20px_white]"
-          />
-          <span className="absolute mt-8 text-[8px] uppercase tracking-[1em] text-white/20 font-bold whitespace-nowrap">
-            Legacy Core
-          </span>
-        </div>
-      </div>
-
       {/* Figures Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-24 md:gap-12 max-w-7xl w-full px-4 relative z-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-24 md:gap-12 max-w-7xl w-full px-4 relative z-10 mb-48">
         {WOMEN_FIGURES.map((woman, idx) => {
           const delay = 0.5 + idx * 1.5;
           const isHovered = hoveredId === woman.id;
@@ -205,7 +195,117 @@ export const WomenInTechGallery: React.FC<WomenInTechGalleryProps> = ({ onPionee
         })}
       </div>
 
-      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="mt-48 text-center relative z-10">
+      {/* Legacy Gateway Interaction */}
+      <div className="relative flex flex-col items-center justify-center mt-24">
+        
+        {/* Connection Lines from Pioneers to Legacy Core */}
+        <div className="absolute inset-0 -top-[400px] w-full h-[600px] pointer-events-none z-0">
+          <svg viewBox="0 0 1200 600" className="w-full h-full overflow-visible">
+            {[150, 450, 750, 1050].map((x, i) => (
+              <motion.path
+                key={`legacy-line-${i}`}
+                d={`M ${x},0 C ${x},200 600,300 600,450`}
+                fill="none"
+                stroke="white"
+                strokeWidth="0.5"
+                strokeOpacity="0.1"
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 3, delay: 5 }}
+              />
+            ))}
+          </svg>
+        </div>
+
+        {/* The Legacy Node */}
+        <div className="relative flex flex-col items-center z-10">
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 0.4 }}
+            className="text-[9px] uppercase tracking-[1em] text-white font-bold mb-12 whitespace-nowrap"
+          >
+            Legacy continues
+          </motion.p>
+
+          <motion.div
+            onMouseEnter={() => setLegacyHovered(true)}
+            onMouseLeave={() => setLegacyHovered(false)}
+            onClick={handleLegacyClick}
+            className="relative cursor-none flex items-center justify-center group"
+          >
+            {/* Atmospheric Rings */}
+            <AnimatePresence>
+              {(legacyHovered || isTransitioning) && (
+                <>
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1.5, opacity: 0.15 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    className="absolute w-48 h-48 rounded-full bg-primary blur-[40px]"
+                  />
+                  {[1, 2].map((i) => (
+                    <motion.div
+                      key={`ring-${i}`}
+                      initial={{ scale: 1, opacity: 0 }}
+                      animate={{ scale: 2.5, opacity: 0 }}
+                      transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+                      className="absolute w-24 h-24 border border-white/20 rounded-full"
+                    />
+                  ))}
+                </>
+              )}
+            </AnimatePresence>
+
+            {/* Core Orb */}
+            <motion.div
+              animate={{
+                scale: isTransitioning ? [1, 15, 1] : (legacyHovered ? [1, 1.2, 1] : [1, 1.1, 1]),
+                opacity: isTransitioning ? [1, 0, 0] : 1,
+                boxShadow: legacyHovered 
+                  ? "0 0 40px rgba(139, 92, 246, 0.8)" 
+                  : "0 0 20px rgba(255, 255, 255, 0.2)"
+              }}
+              transition={{ duration: isTransitioning ? 2 : 3, repeat: isTransitioning ? 0 : Infinity }}
+              className={`w-4 h-4 rounded-full bg-white relative z-20 ${isTransitioning ? 'pointer-events-none' : ''}`}
+            />
+
+            {/* Transition Burst Particles */}
+            <AnimatePresence>
+              {isTransitioning && (
+                <motion.div className="absolute z-30">
+                  {[...Array(12)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ scale: 1, x: 0, y: 0, opacity: 1 }}
+                      animate={{ 
+                        x: (Math.random() - 0.5) * 400, 
+                        y: 800, 
+                        scale: 0,
+                        opacity: 0 
+                      }}
+                      transition={{ duration: 2, ease: "easeOut" }}
+                      className="absolute w-1 h-1 bg-white rounded-full blur-[1px]"
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          <motion.p 
+            animate={{ 
+              opacity: legacyHovered ? 1 : 0.3,
+              y: legacyHovered ? [0, 5, 0] : 0
+            }}
+            className="text-[8px] uppercase tracking-[0.6em] text-white font-medium mt-12 transition-all duration-700"
+          >
+            {isTransitioning ? "Traveling through history..." : "Click to follow the constellation"}
+          </motion.p>
+        </div>
+      </div>
+
+      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="mt-64 text-center relative z-10">
         <p className="text-[10px] uppercase tracking-[0.8em] text-white/20 italic max-w-sm mx-auto">
           Innovation is not a single mind.<br />
           It is a constellation of pioneers.
