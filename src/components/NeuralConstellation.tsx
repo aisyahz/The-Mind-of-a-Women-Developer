@@ -7,16 +7,6 @@ import { NODES, NodeData } from '@/lib/constants';
 
 const SILHOUETTE_PATH = "M 350,750 C 300,720 240,650 240,450 C 240,250 350,180 480,220 C 580,250 630,350 610,480 C 630,510 610,560 550,600 C 520,700 450,750 350,730";
 
-const generateNeuralThreads = () => {
-  return Array.from({ length: 25 }).map(() => {
-    const startX = 420 + (Math.random() - 0.5) * 120;
-    const startY = 410 + (Math.random() - 0.5) * 120;
-    const endX = 420 + (Math.random() - 0.5) * 380;
-    const endY = 410 + (Math.random() - 0.5) * 380;
-    return `M ${startX},${startY} C ${startX + (Math.random() - 0.5) * 350},${startY + (Math.random() - 0.5) * 350} ${endX + (Math.random() - 0.5) * 350},${endY + (Math.random() - 0.5) * 350} ${endX},${endY}`;
-  });
-};
-
 interface NeuralConstellationProps {
   onExplore?: () => void;
   externalHighlightId?: string | null;
@@ -31,7 +21,14 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   
   useEffect(() => {
     // Generate threads only on client mount to avoid hydration mismatch
-    setNeuralThreads(generateNeuralThreads());
+    const generatedThreads = Array.from({ length: 25 }).map(() => {
+      const startX = 420 + (Math.random() - 0.5) * 120;
+      const startY = 410 + (Math.random() - 0.5) * 120;
+      const endX = 420 + (Math.random() - 0.5) * 380;
+      const endY = 410 + (Math.random() - 0.5) * 380;
+      return `M ${startX},${startY} C ${startX + (Math.random() - 0.5) * 350},${startY + (Math.random() - 0.5) * 350} ${endX + (Math.random() - 0.5) * 350},${endY + (Math.random() - 0.5) * 350} ${endX},${endY}`;
+    });
+    setNeuralThreads(generatedThreads);
 
     const brainTimer = setTimeout(() => setShowBrain(true), 3500);
     NODES.forEach((node, index) => {
@@ -46,11 +43,9 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
     if (node.id === 'curiosity' && !isExpanding) {
       setIsExpanding(true);
       
-      // Delay before actual scroll and expansion reveal
       setTimeout(() => {
         onExplore?.();
         
-        // Smooth cinematic scroll
         setTimeout(() => {
           const gallery = document.getElementById('gallery-section');
           if (gallery) {
@@ -221,7 +216,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       <AnimatePresence>
         {!showBrain && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, filter: 'blur(40px)' }} transition={{ duration: 3 }} className="absolute inset-0 flex items-center justify-center text-center z-50 bg-[#050508]">
-            <div className="space-y-6">
+            <div className="space-y-8">
               <motion.div initial={{ letterSpacing: "3em", opacity: 0 }} animate={{ letterSpacing: "1.5em", opacity: 1 }} transition={{ duration: 4 }}>
                 <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter italic uppercase leading-tight">
                   The Mind of a <br />
@@ -230,6 +225,14 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                   </span>
                 </h1>
               </motion.div>
+              <motion.p 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 2, delay: 1 }}
+                className="text-[10px] md:text-xs text-white/60 tracking-[0.4em] uppercase font-light mt-4 px-6 max-w-2xl mx-auto"
+              >
+                Where logic, creativity, empathy, collaboration, and curiosity connect.
+              </motion.p>
             </div>
           </motion.div>
         )}

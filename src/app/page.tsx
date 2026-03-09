@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CosmicBackground } from '@/components/CosmicBackground';
 import { NeuralConstellation } from '@/components/NeuralConstellation';
@@ -26,6 +26,14 @@ export default function Home() {
   const [isFinalStarHovered, setIsFinalStarHovered] = useState(false);
   const [isIgnited, setIsIgnited] = useState(false);
   const [branches, setBranches] = useState<ConstellationBranch[]>([]);
+  const [showConceptualIntro, setShowConceptualIntro] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowConceptualIntro(false);
+    }, 7000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const charVariants = {
     hidden: { opacity: 0, y: 15, filter: 'blur(10px)' },
@@ -60,7 +68,6 @@ export default function Home() {
       const angle = (i / 8) * Math.PI * 2 + (Math.random() * 0.5 - 0.25);
       const length = 150 + Math.random() * 150;
       
-      // Control points for organic curve
       const cp1x = Math.cos(angle + 0.4) * (length * 0.4);
       const cp1y = Math.sin(angle + 0.4) * (length * 0.4);
       const cp2x = Math.cos(angle - 0.2) * (length * 0.7);
@@ -70,10 +77,8 @@ export default function Home() {
 
       const path = `M 0,0 C ${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
       
-      // Nodes along the path
       const branchNodes: BranchNode[] = Array.from({ length: 3 }).map((_, nodeIdx) => {
         const t = (nodeIdx + 1) / 4;
-        // Simple linear approximation for node placement along curve
         return {
           x: endX * t + (Math.random() * 20 - 10),
           y: endY * t + (Math.random() * 20 - 10),
@@ -93,6 +98,45 @@ export default function Home() {
 
   return (
     <main className={`relative min-h-screen w-full bg-[#050508] flex flex-col items-center ${!isExplored ? 'overflow-hidden h-screen' : 'overflow-x-hidden'}`}>
+      
+      {/* Conceptual Intro Sequence */}
+      <AnimatePresence>
+        {showConceptualIntro && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-[#050508] flex items-center justify-center p-6 text-center"
+          >
+            <div className="max-w-3xl space-y-12">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 2, delay: 0.5 }}
+                className="space-y-6"
+              >
+                <p className="text-sm md:text-lg text-white/90 font-light leading-relaxed tracking-wide italic font-body">
+                  “Gender equity in technology is not just about representation. <br className="hidden md:block" />
+                  It is about recognizing the constellation of minds that shaped computing <br className="hidden md:block" />
+                  and ensuring the next generation has space to shine.”
+                </p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 2, delay: 3 }}
+                className="space-y-4"
+              >
+                <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent mx-auto" />
+                <p className="text-[10px] uppercase tracking-[1em] text-white/40 font-medium">
+                  Past · Present · Future
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Pinned Background Layer */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <CosmicBackground />
@@ -136,7 +180,7 @@ export default function Home() {
                   transition={{ duration: 2 }}
                   className="relative w-full py-64 flex flex-col items-center justify-center z-20 bg-transparent overflow-hidden"
                 >
-                  <div className="text-center space-y-16 max-w-3xl px-6 relative">
+                  <div className="text-center space-y-16 max-w-4xl px-6 relative">
                     
                     {/* Visual Entrance: Sequential Star Birth */}
                     <div className="flex justify-center gap-8 mb-32">
