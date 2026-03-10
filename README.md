@@ -6,12 +6,23 @@ This project is a high-fidelity interactive experience that visualizes gender eq
 
 ## 🌌 Narrative Arc
 1.  **Perspective (Preamble):** A cinematic conceptual introduction framing the artwork as a recognition of the diverse minds that shaped computing.
+   <img width="1920" height="1080" alt="Screenshot (1317)" src="https://github.com/user-attachments/assets/dd215e03-1315-425f-a897-1ac4b339e3b1" />
+
 2.  **Curiosity (Hero):** The journey starts with a neural constellation shaped like a woman's profile. Interaction centers on the "Curiosity" node—the spark that unlocks shared discovery.
+   <img width="1920" height="1080" alt="Screenshot (1323)" src="https://github.com/user-attachments/assets/e31b4e15-754b-43eb-af6a-04e9be237f3e" />
+
 3.  **Discovery (Transition):** A "Temporal Expansion" where neural threads grow dynamically downward, bridging the modern mind to its historical roots through a synchronized cinematic scroll.
-4.  **Legacy (Gallery):** A constellation of four pioneers presented as living "Star Nodes." 
+   <img width="1920" height="1080" alt="Screenshot (1324)" src="https://github.com/user-attachments/assets/6cfb52b0-0f3d-4dd1-a73e-2029cb1e9f43" />
+   <img width="1920" height="1080" alt="Screenshot (1325)" src="https://github.com/user-attachments/assets/eaa6f634-3002-499e-9c02-e3cb5d0cb265" />
+
+
+6.  **Legacy (Gallery):** A constellation of four pioneers presented as living "Star Nodes." 
     - **Discovery Lock:** Access to the future is gated until all four pioneers are visited, ensuring their stories are witnessed.
     - **Cross-Era Mapping:** Hovering over a pioneer sends a visual pulse to the corresponding trait in the modern mind (e.g., Ada Lovelace → Creativity).
-5.  **Continuation (Finale):** A "Star-Birth" sequence where the user ignites their own node, causing the constellation to grow with organic, branching neural paths.
+      <img width="1920" height="1080" alt="Screenshot (1329)" src="https://github.com/user-attachments/assets/5a1b1f85-9231-478c-94d3-0d2d420e8464" />
+
+7.  **Continuation (Finale):** A "Star-Birth" sequence where the user ignites their own node, causing the constellation to grow with organic, branching neural paths.
+<img width="1920" height="1080" alt="Screenshot (1331)" src="https://github.com/user-attachments/assets/c1e730b1-512b-4074-985e-d7e00177654a" />
 
 ## 🛠 Tech Stack
 - **Framework:** Next.js 15 (App Router), React 19.
