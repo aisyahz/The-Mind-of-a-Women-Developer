@@ -5,6 +5,11 @@
 
 ## 🌌 Project Overview
 This project visualizes the mind of a woman developer as a living neural network. Each node represents a core cognitive force that shapes how developers think, solve, and create.
+<img width="1830" height="878" alt="Screenshot (1317)" src="https://github.com/user-attachments/assets/140b39d7-a3e0-4615-b0fb-665482090028" />
+<img width="1843" height="904" alt="Screenshot (1318)" src="https://github.com/user-attachments/assets/91e53b63-73c6-4d61-b379-34158b8dc6de" />
+<img width="1841" height="903" alt="Screenshot (1328)" src="https://github.com/user-attachments/assets/b68e86ca-72bb-4648-8a8f-220873df8ffb" />
+<img width="1866" height="907" alt="Screenshot (1333)" src="https://github.com/user-attachments/assets/1946a966-c803-4bda-a552-3cc60084db51" />
+<img width="1851" height="932" alt="Screenshot (1335)" src="https://github.com/user-attachments/assets/c71aea8c-1eef-46fd-9da0-3f925f40b8d4" />
 
 **Key Traits Represented:**
 - **Curiosity:** The spark that ignites discovery.
