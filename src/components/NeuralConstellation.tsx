@@ -141,12 +141,12 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-transparent cursor-none">
-      <div className="absolute top-12 md:top-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center px-6">
+      <div className="absolute top-12 md:top-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center px-6 w-full max-w-2xl mx-auto">
         <motion.p 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 5, delay: 4 }}
-          className="text-lg md:text-xl uppercase tracking-[1.5em] text-white/40 font-bold glow-sm whitespace-nowrap italic"
+          className="text-lg md:text-xl uppercase tracking-[0.6em] md:tracking-[0.8em] text-white/40 font-bold glow-sm italic leading-relaxed"
         >
           Before the code, there was curiosity.
         </motion.p>
@@ -413,11 +413,14 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                       />
 
                       <motion.text
-                        x={node.x} y={node.y + (node.y > 500 ? 110 : -100)} textAnchor="middle"
-                        fill={isActive ? "white" : "rgba(255,255,255,0.25)"}
-                        fontSize={isActive ? "24" : "20"} fontWeight="800" 
-                        className="font-body tracking-[0.4em] uppercase transition-all duration-800 pointer-events-none"
-                        style={{ filter: isActive ? `drop-shadow(0 0 12px ${node.color})` : "none" }}
+                        x={node.x} 
+                        y={node.y + (node.y > 600 ? 150 : -150)} 
+                        textAnchor="middle"
+                        fill={isActive ? "white" : "rgba(255,255,255,0.35)"}
+                        fontSize={isActive ? "28" : "24"} 
+                        fontWeight="900" 
+                        className="font-body tracking-[0.4em] uppercase transition-all duration-800 pointer-events-none select-none"
+                        style={{ filter: isActive ? `drop-shadow(0 0 15px ${node.color})` : "drop-shadow(0 0 5px rgba(0,0,0,0.8))" }}
                       >
                         {node.label}
                       </motion.text>
@@ -462,11 +465,11 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
                       {isCuriosity && !isExpanding && (
                         <motion.g initial={{ opacity: 0 }} animate={{ opacity: isActive ? 1 : 0.5 }} transition={{ duration: 4 }}>
-                          <text x={node.x} y={node.y + 130} textAnchor="middle" fill="white" className="text-[18px] md:text-[22px] uppercase tracking-[0.8em] font-black glow-sm pointer-events-none italic">
+                          <text x={node.x} y={node.y + 160} textAnchor="middle" fill="white" className="text-[18px] md:text-[22px] uppercase tracking-[0.8em] font-black glow-sm pointer-events-none italic">
                             {isActive ? "UNFOLD LINEAGE" : "IGNITE"}
                           </text>
                           <motion.path
-                            d={`M ${node.x - 10} ${node.y + 150} L ${node.x} ${node.y + 160} L ${node.x + 10} ${node.y + 150} M ${node.x - 10} ${node.y + 160} L ${node.x} ${node.y + 170} L ${node.x + 10} ${node.y + 160}`}
+                            d={`M ${node.x - 10} ${node.y + 180} L ${node.x} ${node.y + 190} L ${node.x + 10} ${node.y + 180} M ${node.x - 10} ${node.y + 190} L ${node.x} ${node.y + 200} L ${node.x + 10} ${node.y + 190}`}
                             fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" 
                             animate={{ 
                               y: [0, 8, 0],
