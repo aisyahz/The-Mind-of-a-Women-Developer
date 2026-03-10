@@ -184,7 +184,7 @@ export default function Home() {
           onExplore={() => setIsExplored(true)} 
           externalHighlightId={highlightedNodeId}
         />
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_20%,rgba(0,0,0,0.8)_100%)] z-5" />
+        {/* Removed radial gradient overlay to match gallery background color */}
       </section>
 
       <AnimatePresence>

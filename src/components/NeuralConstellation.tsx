@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import { NODES, NodeData } from '@/lib/constants';
 
@@ -36,7 +36,6 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const springX = useSpring(mouseX, { damping: 50, stiffness: 80 });
   const springY = useSpring(mouseY, { damping: 50, stiffness: 80 });
 
-  // Rules of Hooks: Define all hooks at the top level
   const bgX = useTransform(springX, [0, 800], [50, -50]);
   const bgY = useTransform(springY, [0, 1000], [50, -50]);
   const midX = useTransform(springX, [0, 800], [15, -15]);
@@ -117,17 +116,15 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
       setActiveNodeId('curiosity');
       if (!isExpanding) {
         setIsExpanding(true);
-        // Cinematic transition: 4.5 seconds of expansion effect
         setTimeout(() => {
           onExplore?.();
-          // Scroll almost immediately after the explosion peaks
           setTimeout(() => {
             const gallery = document.getElementById('gallery-section');
             if (gallery) {
               gallery.scrollIntoView({ behavior: 'smooth' });
             }
-          }, 1000); // 1 second buffer after exploration begins
-        }, 4500); // Trigger explore at 4.5s
+          }, 800);
+        }, 4200);
       }
     } else {
       setActiveNodeId(node.id === activeNodeId ? null : node.id);
@@ -323,15 +320,13 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             const isDiscovered = activeNodeId === node.id;
             const isActive = isHovered || isDiscovered || (externalHighlightId === node.id);
             const isCuriosity = node.id === 'curiosity';
-
             const isCreativity = node.id === 'creativity';
             
-            // Layout offsets for labels and shards
             const labelYOffset = isCreativity ? 140 : (node.y < 500 ? -160 : 160);
-            const shardBoxYOffset = isCreativity ? -240 : (node.y < 500 ? 180 : -380);
-            const shardContentYOffset = isCreativity ? -220 : (node.y < 500 ? 200 : -360);
+            const shardBoxYOffset = isCreativity ? -280 : (node.y < 500 ? 180 : -380);
+            const shardContentYOffset = isCreativity ? -260 : (node.y < 500 ? 200 : -360);
             const lineY1 = isCreativity ? -20 : (node.y < 500 ? 90 : -90);
-            const lineY2 = isCreativity ? -60 : (node.y < 500 ? 180 : -180);
+            const lineY2 = isCreativity ? -120 : (node.y < 500 ? 180 : -180);
 
             return (
               <g 
@@ -442,7 +437,6 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
                       {isCuriosity && !isExpanding && (
                         <motion.g initial={{ opacity: 0 }} animate={{ opacity: isActive ? 1 : 0.8 }} transition={{ duration: 2 }}>
-                          {/* Pulsating Arrows */}
                           <motion.path
                             d={`M ${node.x - 15} ${node.y + 260} L ${node.x} ${node.y + 275} L ${node.x + 15} ${node.y + 260} M ${node.x - 15} ${node.y + 275} L ${node.x} ${node.y + 290} L ${node.x + 15} ${node.y + 275}`}
                             fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2.5" 
@@ -452,19 +446,21 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                             }}
                             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                           />
-                          {/* CLICK TO IGNITE HINT */}
                           <motion.text
                             x={node.x} 
                             y={node.y + 340}
                             textAnchor="middle"
                             fill="white"
-                            fontSize="14"
+                            fontSize="16"
                             fontWeight="900"
-                            className="font-body tracking-[0.6em] uppercase"
-                            animate={{ opacity: [0.3, 0.8, 0.3] }}
-                            transition={{ duration: 2.5, repeat: Infinity }}
+                            className="font-body tracking-[0.8em] uppercase"
+                            animate={{ 
+                              opacity: [0.4, 1, 0.4],
+                              scale: [1, 1.05, 1]
+                            }}
+                            transition={{ duration: 2, repeat: Infinity }}
                           >
-                            CLICK TO IGNITE
+                            TRY CLICK TO IGNITE
                           </motion.text>
                         </motion.g>
                       )}
