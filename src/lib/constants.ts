@@ -13,8 +13,8 @@ export const NODES: NodeData[] = [
     label: 'Logic',
     color: '#3b82f6', // Electric Blue
     insight: 'Structure within complexity. The architecture of understanding.',
-    x: 680,
-    y: 300, // Balanced Upper Right
+    x: 740,
+    y: 320, // Increased separation
   },
   {
     id: 'creativity',
@@ -22,23 +22,23 @@ export const NODES: NodeData[] = [
     color: '#a855f7', // Vivid Violet
     insight: 'The leap beyond rules. The spark that imagines what does not yet exist.',
     x: 400,
-    y: 180, // Top Crown - shifted slightly for shard space
+    y: 280, // Moved down for shard visibility
   },
   {
     id: 'empathy',
     label: 'Empathy',
     color: '#f43f5e', // Strong Rose/Magenta
     insight: 'To design for people, not just systems. To feel the human shape of technology.',
-    x: 120,
-    y: 500, // Far Left Face area
+    x: 60,
+    y: 580, // Pushed far left
   },
   {
     id: 'collaboration',
     label: 'Collaboration',
     color: '#22d3ee', // Bright Cyan
     insight: 'Where ideas become stronger together. Innovation through connection.',
-    x: 680,
-    y: 820, // Lower Back area
+    x: 740,
+    y: 920, // Pushed lower right
   },
   {
     id: 'curiosity',
@@ -46,6 +46,6 @@ export const NODES: NodeData[] = [
     color: '#f59e0b', // Amber/Gold
     insight: 'The first ignition. The force that opens every path.',
     x: 400,
-    y: 500, // Central Core
+    y: 580, // Central Core
   },
 ];

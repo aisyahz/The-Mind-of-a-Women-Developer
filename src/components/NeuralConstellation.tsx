@@ -37,7 +37,6 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const springX = useSpring(mouseX, { damping: 50, stiffness: 80 });
   const springY = useSpring(mouseY, { damping: 50, stiffness: 80 });
 
-  // Hooks must be at top level
   const bgX = useTransform(springX, [0, 800], [50, -50]);
   const bgY = useTransform(springY, [0, 1000], [50, -50]);
   const midX = useTransform(springX, [0, 800], [15, -15]);
@@ -145,7 +144,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 4, delay: 3 }}
-          className="text-lg md:text-xl uppercase tracking-[0.6em] md:tracking-[1em] text-white/60 font-bold glow-sm italic leading-none max-w-full"
+          className="text-lg md:text-xl uppercase tracking-[0.6em] md:tracking-[1em] text-white/60 font-bold glow-sm italic leading-none max-w-full whitespace-nowrap"
         >
           Before the code, there was curiosity.
         </motion.h3>
@@ -326,16 +325,14 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             const isActive = isHovered || isDiscovered || (externalHighlightId === node.id);
             const isCuriosity = node.id === 'curiosity';
 
-            // DIRECTIONAL LABEL & SHARD LOGIC
             const isCreativity = node.id === 'creativity';
             
-            // For Creativity specifically, description goes ON TOP. Label goes BELOW.
-            // For others, use split logic based on Y position.
+            // Refined Logic for Creativity: Description ABOVE, Label BELOW
             const labelYOffset = isCreativity ? 140 : (node.y < 500 ? -160 : 160);
-            const shardBoxYOffset = isCreativity ? -380 : (node.y < 500 ? 180 : -380);
-            const shardContentYOffset = isCreativity ? -360 : (node.y < 500 ? 200 : -360);
-            const lineY1 = isCreativity ? -90 : (node.y < 500 ? 90 : -90);
-            const lineY2 = isCreativity ? -180 : (node.y < 500 ? 180 : -180);
+            const shardBoxYOffset = isCreativity ? -240 : (node.y < 500 ? 180 : -380);
+            const shardContentYOffset = isCreativity ? -220 : (node.y < 500 ? 200 : -360);
+            const lineY1 = isCreativity ? -20 : (node.y < 500 ? 90 : -90);
+            const lineY2 = isCreativity ? -60 : (node.y < 500 ? 180 : -180);
 
             return (
               <g 
