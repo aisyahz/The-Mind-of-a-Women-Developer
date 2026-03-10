@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import { NODES, NodeData } from '@/lib/constants';
 
@@ -37,7 +37,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
   const springX = useSpring(mouseX, { damping: 50, stiffness: 80 });
   const springY = useSpring(mouseY, { damping: 50, stiffness: 80 });
 
-  // Parallax layers hooks - MUST be at top level
+  // Hooks must be at top level
   const bgX = useTransform(springX, [0, 800], [50, -50]);
   const bgY = useTransform(springY, [0, 1000], [50, -50]);
   const midX = useTransform(springX, [0, 800], [15, -15]);
@@ -145,7 +145,7 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 4, delay: 3 }}
-          className="text-lg md:text-xl uppercase tracking-[0.6em] md:tracking-[0.8em] text-white/60 font-bold glow-sm italic leading-none"
+          className="text-lg md:text-xl uppercase tracking-[0.6em] md:tracking-[1em] text-white/60 font-bold glow-sm italic leading-none max-w-full"
         >
           Before the code, there was curiosity.
         </motion.h3>
@@ -327,14 +327,15 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
             const isCuriosity = node.id === 'curiosity';
 
             // DIRECTIONAL LABEL & SHARD LOGIC
-            // To prevent overlap:
-            // Upper nodes (y < 500): Label ABOVE, Shard BELOW.
-            // Lower nodes (y >= 500): Label BELOW, Shard ABOVE.
-            const labelYOffset = node.y < 500 ? -140 : 140;
-            const shardBoxYOffset = node.y < 500 ? 180 : -380;
-            const shardContentYOffset = node.y < 500 ? 200 : -360;
-            const lineY1 = node.y < 500 ? 90 : -90;
-            const lineY2 = node.y < 500 ? 180 : -180;
+            const isCreativity = node.id === 'creativity';
+            
+            // For Creativity specifically, description goes ON TOP. Label goes BELOW.
+            // For others, use split logic based on Y position.
+            const labelYOffset = isCreativity ? 140 : (node.y < 500 ? -160 : 160);
+            const shardBoxYOffset = isCreativity ? -380 : (node.y < 500 ? 180 : -380);
+            const shardContentYOffset = isCreativity ? -360 : (node.y < 500 ? 200 : -360);
+            const lineY1 = isCreativity ? -90 : (node.y < 500 ? 90 : -90);
+            const lineY2 = isCreativity ? -180 : (node.y < 500 ? 180 : -180);
 
             return (
               <g 
@@ -406,9 +407,9 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
                       <AnimatePresence>
                         {isDiscovered && (
                           <motion.g
-                            initial={{ opacity: 0, y: 30, scale: 0.9, filter: 'blur(20px)' }}
+                            initial={{ opacity: 0, y: isCreativity ? -30 : 30, scale: 0.9, filter: 'blur(20px)' }}
                             animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                            exit={{ opacity: 0, y: 20, scale: 0.95, filter: 'blur(10px)' }}
+                            exit={{ opacity: 0, y: isCreativity ? -20 : 20, scale: 0.95, filter: 'blur(10px)' }}
                             transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
                           >
                             <path
@@ -443,14 +444,11 @@ export const NeuralConstellation: React.FC<NeuralConstellationProps> = ({ onExpl
 
                       {isCuriosity && !isExpanding && (
                         <motion.g initial={{ opacity: 0 }} animate={{ opacity: isActive ? 1 : 0.6 }} transition={{ duration: 4 }}>
-                          <text x={node.x} y={node.y + 260} textAnchor="middle" fill="white" className="text-[20px] md:text-[22px] uppercase tracking-[1em] font-black glow-md pointer-events-none italic">
-                            {isActive ? "UNFOLD LINEAGE" : "IGNITE"}
-                          </text>
                           <motion.path
-                            d={`M ${node.x - 10} ${node.y + 280} L ${node.x} ${node.y + 292} L ${node.x + 10} ${node.y + 280} M ${node.x - 10} ${node.y + 292} L ${node.x} ${node.y + 304} L ${node.x + 10} ${node.y + 292}`}
-                            fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" 
+                            d={`M ${node.x - 15} ${node.y + 260} L ${node.x} ${node.y + 275} L ${node.x + 15} ${node.y + 260} M ${node.x - 15} ${node.y + 275} L ${node.x} ${node.y + 290} L ${node.x + 15} ${node.y + 275}`}
+                            fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2.5" 
                             animate={{ 
-                              y: [0, 10, 0],
+                              y: [0, 8, 0],
                               opacity: [0.4, 1, 0.4] 
                             }}
                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
